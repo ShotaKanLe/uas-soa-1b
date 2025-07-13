@@ -93,7 +93,7 @@
             class="w-full sm:w-auto px-6 py-2 bg-[#39AA80] text-white rounded-md hover:bg-[#2F7B63] shadow-sm transition-colors flex items-center justify-center gap-2"
             id="submit-btn"
         >
-            Add Employee Data
+            Add Address Data
         </button>
     </div>
 </div>

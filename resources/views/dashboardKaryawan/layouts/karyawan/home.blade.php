@@ -237,12 +237,12 @@
         <!-- Modal Actions -->
         <div class="flex justify-between items-center mt-6 pt-4 border-t">
             <!-- Edit Button -->
-            <a 
+            {{-- <a 
                 :href="'{{ url('/dashboard/karyawan/perjalanan/edit') }}/' + selectedRow.id"
                 class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-semibold rounded-lg"
             >
                 Edit
-            </a>
+            </a> --}}
 
             <!-- Delete Button Group -->
             {{-- <div class="flex gap-2 items-center">
