@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link rel="icon" href="{{ asset('favicon_ico.ico') }}" type="image/x-icon">
     <script>
         tailwind.config = {
             theme: {
@@ -118,6 +119,8 @@
                 id: '{{ $item->id }}',
                 nama_karyawan: '{{ $item->karyawanPerusahaan->nama_karyawan }}',
                 alamat: '{{ $item->alamat_rumah }}',
+                longitude: '{{ $item->longitude }}',
+                latitude: '{{ $item->latitude }}',
             }@if (!$loop->last),@endif
             @endforeach
         ],
@@ -152,8 +155,15 @@
                 id_hasil_analisis: '{{ $item->id_hasil_analisis }}',
                 nama_konsultasi: '{{ $item->nama_konsultasi }}',
                 nama_analisis: '{{ $item->hasilAnalisisEmisi->nama_analisis }}',
+                status_konsultasi: '{{ $item->status_konsultasi }}',
                 created_at: '{{ $item->created_at }}',
                 updated_at: '{{ $item->updated_at }}',
+                @if ($item->pesan != null)
+                judul_pesan: '{{ $item->pesan->judul_pesan }}',
+                isi_pesan: '{{ $item->pesan->isi_pesan }}',
+                pdf_pesan: '{{ $item->pesan->file_pdf }}',
+                @endif
+                file_pdf: '{{ $item->hasilAnalisisEmisi->file_pdf }}',
             }@if (!$loop->last),@endif
             @endforeach
         ],

@@ -18,7 +18,7 @@
 >
 
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-        <h2 class="text-xl font-semibold text-gray-800">Homes</h2>
+        <h2 class="text-xl font-semibold text-gray-800">Employee Commutes</h2>
         <div class="flex flex-wrap gap-2">
             <!-- Tombol Absen -->
                 <button 

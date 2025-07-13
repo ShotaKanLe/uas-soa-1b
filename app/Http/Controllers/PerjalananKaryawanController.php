@@ -78,12 +78,18 @@ class PerjalananKaryawanController extends Controller
             'alamat_rumah' => 'required',
             'bahan_bakar' => 'required',
             'transportasi' => 'required',
-            // 'durasi_perjalanan' => 'required',
         ]);
 
         $idPerusahaan = KaryawanPerusahaan::where('id', session('id'))->first()->id_perusahaan;
 
         $emisiKarbonPermenit = BahanBakar::where('id', $request->bahan_bakar)->first()->emisi_karbon_permenit;
+
+        $co2 = BahanBakar::where('id', $request->bahan_bakar)->first()->co2perliter;
+        $ch4 = BahanBakar::where('id', $request->bahan_bakar)->first()->ch4perliter;
+        $n2O = BahanBakar::where('id', $request->bahan_bakar)->first()->n2Operliter;
+        $co2e = BahanBakar::where('id', $request->bahan_bakar)->first()->co2eperliter;
+        $WTT = BahanBakar::where('id', $request->bahan_bakar)->first()->WTTperliter;
+        $consumpstion_rate = BahanBakar::where('id', $request->bahan_bakar)->first()->rerata_konsumsi_literperkm;
 
         $alamatRumah = AlamatRumah::find($request->alamat_rumah);
         $perusahaan  = Perusahaan::find($idPerusahaan);
@@ -110,7 +116,13 @@ class PerjalananKaryawanController extends Controller
 
         $jarakPerjalanan = $this->hitungJarakPerjalanan($start, $end);
 
-        $emisiKarbon = $jarakPerjalanan * $emisiKarbonPermenit * $request->durasi_perjalanan;
+        $totalco2 = $co2 * $jarakPerjalanan * $consumpstion_rate;
+        $totalch4 = $ch4 * $jarakPerjalanan * $consumpstion_rate;
+        $totaln2O = $n2O * $jarakPerjalanan * $consumpstion_rate;
+        $totalco2e = $co2e * $jarakPerjalanan * $consumpstion_rate;
+        $totalWTT = $WTT * $jarakPerjalanan * $consumpstion_rate;
+
+        $emisiKarbon = $totalco2 + $totalch4 + $totaln2O + $totalco2e;
 
         PerjalananKaryawanPerusahaan::create([
             'id_karyawan' => session('id'),
@@ -121,6 +133,11 @@ class PerjalananKaryawanController extends Controller
             'id_perusahaan' => $idPerusahaan,
             'tanggal_perjalanan' => Carbon::now(),
             'jarak_perjalanan' => $jarakPerjalanan,
+            'total_co2' => $totalco2,
+            'total_ch4' => $totalch4,
+            'total_n2O' => $totaln2O,
+            'total_co2e' => $totalco2e,
+            'total_WTT' => $totalWTT,
             'total_emisi_karbon' => $emisiKarbon,
         ]);
 

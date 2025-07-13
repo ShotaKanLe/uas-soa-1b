@@ -72,7 +72,7 @@ class KonsultasiController extends Controller
         return redirect('dashboard/perusahaan/konsultasi/add')->with('success', 'Consultation Successfully Added');
     }
 
-    public function uploadStaff(Request $request)
+    public function replyStaff(Request $request)
     {
         if ($redirect = $this->checkifLoginForStaff()) {
             return $redirect;
@@ -92,7 +92,7 @@ class KonsultasiController extends Controller
             ]);
 
             // Simpan file dengan nama acak
-            $fileName = uniqid().'_'.time().'.'.$file->getClientOriginalExtension();
+            $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('messages'), $fileName);
         }
 
@@ -105,6 +105,8 @@ class KonsultasiController extends Controller
             'file_pdf' => $fileName,
         ]);
 
-        return redirect('dashboard/staff/konsultasi/')->with('success', 'Consultation Successfully Added');
+        HasilKonsultasi::where('id', $request->consultation_id)->update(['status_konsultasi' => 'CLOSED']);
+
+        return redirect('dashboard/staff/konsultasi/')->with('success', 'Consultation Reply Successfully Added');
     }
 }

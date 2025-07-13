@@ -22,4 +22,9 @@ class HasilKonsultasi extends Model
     {
         return $this->belongsTo(HasilAnalisisEmisi::class, 'id_hasil_analisis');
     }
+
+    public function pesan()
+    {
+        return $this->hasOne(Pesan::class, 'id_konsultasi');
+    }
 }

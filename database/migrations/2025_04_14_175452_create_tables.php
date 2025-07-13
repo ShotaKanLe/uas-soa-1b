@@ -141,6 +141,10 @@ return new class extends Migration
             $table->foreignId('id_perusahaan')->constrained('perusahaans');
             $table->date('tanggal_analisis');
             $table->text('file_pdf');
+            $table->integer('total_data')->nullable();
+            $table->decimal('total_emisi_karbon', 10, 2)->nullable();
+            $table->decimal('rata_rata_emisi', 10, 2)->nullable();
+            $table->json('filter_applied')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -181,7 +185,7 @@ return new class extends Migration
             $table->text('nama_konsultasi');
             $table->date('tanggal_konsultasi');
             $table->text('isi_konsultasi');
-            $table->text('status_konsultasi');
+            $table->text('status_konsultasi')->default('OPEN');
             $table->foreignId('id_hasil_analisis')->constrained('hasil_analisis_emisis');
             $table->timestamps();
             $table->softDeletes();

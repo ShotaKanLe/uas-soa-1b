@@ -105,7 +105,7 @@ Route::get('dashboard/staff/informasi/restore/{id}', [InformasiController::class
 Route::get('dashboard/staff/konsultasi', [KonsultasiController::class, 'indexStaff'])->name('staff.konsultasi.index');
 Route::get('dashboard/staff/konsultasi/edit/{id}', [KonsultasiController::class, 'editStaff'])->name('staff.konsultasi.edit');
 Route::get('dashboard/staff/konsultasi/add', [KonsultasiController::class, 'addStaff'])->name('staff.konsultasi.add');
-Route::post('dashboard/staff/konsultasi/add', [KonsultasiController::class, 'uploadStaff'])->name('staff.konsultasi.upload');
+Route::post('dashboard/staff/konsultasi/add', [KonsultasiController::class, 'replyStaff'])->name('staff.konsultasi.reply');
 Route::post('dashboard/staff/konsultasi', [KonsultasiController::class, 'storeStaff'])->name('staff.konsultasi.store');
 Route::put('dashboard/staff/konsultasi/edit/{id}', [KonsultasiController::class, 'updateStaff'])->name('staff.konsultasi.update');
 Route::delete('dashboard/staff/konsultasi/{id}', [KonsultasiController::class, 'deleteStaff'])->name('staff.konsultasi.delete');
@@ -157,6 +157,9 @@ Route::post('dashboard/karyawan/alamat', [AlamatRumahController::class, 'storeAl
 Route::put('dashboard/karyawan/alamat/edit/{id}', [AlamatRumahController::class, 'updateAlamatKaryawan'])->name('karyawan.alamat.update');
 Route::delete('dashboard/karyawan/alamat/{id}', [AlamatRumahController::class, 'deleteAlamatKaryawan'])->name('karyawan.alamat.delete');
 Route::get('dashboard/karyawan/alamat/restore/{id}', [AlamatRumahController::class, 'restoreAlamatKaryawan'])->name('karyawan.alamat.restore');
+
+Route::get('/analysis/download/{filename}', [AnalisisEmisiKarbonController::class, 'downloadAnalysisPdf'])->name('analysis.pdf.download');
+Route::get('/reply/download/{filename}', [AnalisisEmisiKarbonController::class, 'downloadReplyPdf'])->name('reply.pdf.download');
 
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
