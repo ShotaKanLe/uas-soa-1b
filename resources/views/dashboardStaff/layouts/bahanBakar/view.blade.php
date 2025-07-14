@@ -20,7 +20,7 @@
         <h2 class="text-xl font-semibold text-gray-800">Fuels</h2>
         <div class="flex flex-wrap gap-2">
             <a href="{{ route('bahanBakar.add') }}">
-                <button class="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 border border-green-600">
+                <button class="flex items-center gap-2 px-4 py-2 bg-[#39AA80] text-white rounded-md hover:bg-[#2F7B63] border border-green-600">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -30,6 +30,15 @@
         </div>
     </div>
 
+    @if (session('success'))
+            <div class="mb-4 p-4 rounded-md border border-green-300 bg-green-50 text-green-800 shadow-sm flex items-start gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -37,8 +46,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fuel Name</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fuel Type</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Emission</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost perLiter (IDR)</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                 </tr>
             </thead>
@@ -48,7 +56,6 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="row.no"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="row.nama_bahan_bakar"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="row.jenis_bahan_bakar"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="row.emisi_karbon"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="row.harga_bahan_bakar"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                             <div class="flex justify-center">
@@ -82,20 +89,73 @@
         >
             <!-- Modal Header -->
             <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="text-2xl font-bold text-gray-800">Service Detail</h3>
+                <h3 class="text-2xl font-bold text-gray-800">Fuel Detail</h3>
                 <button @click="showModal = false; confirmDelete = false" class="text-gray-500 hover:text-gray-700 text-xl">
                     &times;
                 </button>
             </div>
 
             <!-- Modal Content -->
-            <div class="space-y-3 text-sm text-gray-700">
-                <p><span class="font-semibold">Fuel Name :</span> <span x-text="selectedRow.nama_bahan_bakar"></span></p>
-                <p><span class="font-semibold">Carbon Emission (CO2e) per-Minute :</span> <span x-text="selectedRow.emisi_karbon"></span></p>
-                <p><span class="font-semibold">Fuel Cost per-Liter :</span> <span x-text="selectedRow.harga_bahan_bakar"></span></p>
-                <template x-if="selectedRow.image_service">
-                    <img :src="'/service_images/' + selectedRow.image_service" class="w-36 h-36 object-cover rounded-lg border mt-2" alt="Image">
-                </template>
+            <div class="bg-white rounded-xl shadow-md p-6 space-y-6 text-sm text-gray-700">
+                <!-- Fuel Information -->
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900 border-b pb-2 mb-4">Fuel Information</h2>
+                    <div class="grid grid-cols-2 gap-y-3 gap-x-8">
+                        <div>
+                            <p class="text-gray-500">Fuel Name</p>
+                            <p class="font-medium text-gray-900" x-text="selectedRow.nama_bahan_bakar"></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Fuel Type</p>
+                            <p class="font-medium text-gray-900" x-text="selectedRow.nama_bahan_bakar"></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Cost per Liter</p>
+                            <p class="font-medium text-gray-900" x-text="selectedRow.nama_bahan_bakar"></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Consumption Rate</p>
+                            <p class="font-medium text-gray-900" x-text="selectedRow.rerata_konsumsi_literperkm"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emission Data -->
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900 border-b pb-2 mb-4">Emission Data</h2>
+                    <div class="grid grid-cols-2 gap-y-3 gap-x-8">
+                        <div>
+                            <p class="text-gray-500">CO<sub>2</sub></p>
+                            <p class="font-medium text-gray-900">
+                                <span x-text="selectedRow.co2perliter"></span> kg CO<sub>2</sub>e/L
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">CH<sub>4</sub></p>
+                            <p class="font-medium text-gray-900">
+                                <span x-text="selectedRow.ch4perliter"></span> kg CO<sub>2</sub>e/L
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">N<sub>2</sub>O</p>
+                            <p class="font-medium text-gray-900">
+                                <span x-text="selectedRow.n2Operliter"></span> kg CO<sub>2</sub>e/L
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">CO<sub>2</sub>e Total</p>
+                            <p class="font-medium text-gray-900">
+                                <span x-text="selectedRow.co2eperliter"></span> kg CO<sub>2</sub>e/L
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">WTT</p>
+                            <p class="font-medium text-gray-900">
+                                <span x-text="selectedRow.WTTperliter"></span> kg CO<sub>2</sub>e/L
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Modal Actions -->
@@ -103,7 +163,7 @@
                 <!-- Edit Button -->
                 <a 
                     :href="'{{ url('/dashboard/staff/bahanBakar/edit') }}/' + selectedRow.id"
-                    class="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-white text-sm font-semibold rounded-lg"
+                    class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-semibold rounded-lg"
                 >
                     Edit
                 </a>

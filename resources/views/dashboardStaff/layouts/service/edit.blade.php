@@ -1,121 +1,172 @@
 @extends('dashboardStaff.layouts.app')
 
-@section('title', 'Update Informations')
+@section('title', 'Edit Data Services')
 
 @section('content')
 
 <div class="bg-white rounded-md shadow-sm shadow-blue-100 border border-gray-300 p-6 mb-6">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-        <h2 class="text-xl font-semibold text-gray-800">Update Data</h2>
-        <a href="{{ route('informasi.index') }}">
+        <h2 class="text-xl font-semibold text-gray-800">Edit Data</h2>
+        <a href="{{ route('service.index') }}">
             <button class="flex items-center gap-2 px-4 py-2 border border-green-500 text-green-600 rounded-md hover:bg-green-50">
                 Back to Dashboard
             </button>
         </a>
     </div>
 
-    <form id="form-id" method="POST" action="{{ route('informasi.update', ['id' => $oldData->id]) }}" enctype="multipart/form-data" class="grid grid-cols-1 gap-6 mb-4">
+    <form id="form-id" method="POST" action="{{ route('service.update', ['id' => $oldData->id]) }}" enctype="multipart/form-data"
+    class="bg-white p-6 rounded-xl shadow-md space-y-8">
         @csrf
         @method('PUT')
-
-        <!-- Information Name -->
-        <div>
-            <label for="information_name" class="block text-sm font-medium text-gray-700 mb-1">Information Name <span class="text-red-500">*</span></label>
-            <input type="text" id="information_name" name="information_name" value="{{ old('information_name', $oldData->judul_informasi) }}" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                placeholder="Information Name" />
-            @error('information_name')
-                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <!-- Tag -->
-        <div>
-            <label for="tag" class="block text-sm font-medium text-gray-700 mb-1">Tag <span class="text-red-500">*</span></label>
-            <input type="text" id="tag" name="tag" value="{{ old('tag', $oldData->tag) }}" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                placeholder="Tag (separate each tag with a comma)" />
-            @error('tag')
-                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <!-- Content -->
-        <div class="md:col-span-2">
-            <label for="content" class="block text-sm font-medium text-gray-700 mb-1">Content <span class="text-red-500">*</span></label>
-            <textarea id="content" name="content" required
-                class="w-full h-48 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 resize-none"
-                placeholder="Enter information contents">{{ old('content', $oldData->isi_informasi) }}</textarea>
-            @error('content')
-                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <!-- Upload Image -->
-        <div x-data="{ isDragging: false, imageUrl: null, fileName: '' }" class="md:col-span-2 flex flex-col justify-start">
-            <label for="gambar_informasi" class="block text-sm font-medium text-gray-700 mb-1">Information Image <span class="text-red-500">*</span></label>
-
-            <div @dragover.prevent="isDragging = true"
-                @dragleave.prevent="isDragging = false"
-                @drop.prevent="isDragging = false"
-                :class="{ 'border-green-500 ring-2 ring-green-200': isDragging }"
-                class="flex-1 w-full px-3 py-6 border-2 border-dashed border-gray-300 rounded-md shadow-sm transition duration-200 bg-white text-center flex flex-col items-center justify-center gap-2">
-
-                <template x-if="fileName">
-                    <p class="text-sm text-green-600 font-medium" x-text="`Selected file: ${fileName}`"></p>
-                </template>
-                <template x-if="!fileName">
-                    <img src="{{ asset('informasi_images/'.$oldData->gambar_informasi) }}" alt="Current Information Image" class="mx-auto max-h-40 mb-3 rounded-md border border-gray-300" />
-                    <p class="text-sm text-gray-600">Drag & drop your image here or click to select</p>
-                </template>
-
-                <input type="file" accept="image/*" id="gambar_informasi" name="gambar_informasi"
-                    class="hidden"
-                    @change="
-                        let file = $event.target.files[0];
-                        if (file) {
-                            imageUrl = window.URL.createObjectURL(file);
-                            fileName = file.name;
-                        } else {
-                            imageUrl = null;
-                            fileName = '';
-                        }
-                    "
-                    x-ref="fileInput">
-
-                <button type="button"
-                    @click="$refs.fileInput.click()"
-                    class="mt-2 px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 transition">
-                    Choose File
-                </button>
+        <!-- Input Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Service Name -->
+            <div>
+                <label for="service_name" class="block text-sm font-medium text-gray-700 mb-1">Service Name <span class="text-red-500">*</span></label>
+                <input type="text" id="service_name" name="service_name" value="{{ $oldData->nama_service }}" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    placeholder="Carbon Tracker" />
+                @error('service_name')
+                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
-            @error('gambar_informasi')
-                <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
-            @enderror
-        </div>
-    </form>
+            <!-- Duration -->
+            <div>
+                <label for="service_duration" class="block text-sm font-medium text-gray-700 mb-1">Duration (Days) <span class="text-red-500">*</span></label>
+                <input type="text" id="service_duration" name="service_duration" value="{{ $oldData->durasi_service }}" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    placeholder="30 Days" />
+                @error('service_duration')
+                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
 
-    @if (session('success'))
-        <div class="mb-4 p-4 rounded-md border border-green-300 bg-green-50 text-green-800 shadow-sm flex items-start gap-3">
+            <!-- Price -->
+            <div>
+                <label for="service_price" class="block text-sm font-medium text-gray-700 mb-1">Price (IDR) <span class="text-red-500">*</span></label>
+                <input type="number" id="service_price" name="service_price" value="{{ $oldData->harga_service }}" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    placeholder="500000 (IDR)" />
+                @error('service_price')
+                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+
+        <!-- Description with Tag Input -->
+        <div class="grid grid-cols-1 gap-6">
+            <div>
+                <label for="service_description_input" class="block text-sm font-medium text-gray-700 mb-1">
+                    Service Features / Description <span class="text-red-500">*</span>
+                </label>
+
+                <!-- Tag Container -->
+                <div id="tag-container"
+                    class="flex flex-wrap items-center gap-2 p-2 border border-gray-300 rounded-md shadow-sm min-h-[48px] focus-within:ring-2 focus-within:ring-green-500 focus-within:border-green-500 transition-all">
+                    <input type="text" id="service_description_input"
+                        class="flex-1 bg-transparent border-none outline-none text-sm focus:ring-0"
+                        placeholder="Press Enter to add feature..." />
+                </div>
+
+                <!-- Hidden Input -->
+                <input type="hidden" name="service_description" id="service_description_hidden" />
+
+                @error('service_description')
+                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+
+        <!-- Success Notification -->
+        @if (session('success'))
+        <div class="flex items-start gap-3 p-4 bg-green-50 border border-green-200 text-green-800 rounded-md shadow-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
             <span>{{ session('success') }}</span>
         </div>
-    @endif
+        @endif
 
-    <!-- Form Actions -->
-    <div class="flex justify-end gap-3 pt-6">
-        <a href="{{ route('informasi.index') }}">
-            <button type="button" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm text-gray-700 bg-white hover:bg-gray-50">
-                Cancel
+        <!-- Action Buttons -->
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+            <a href="{{ route('service.index') }}">
+                <button type="button"
+                    class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
+                    Cancel
+                </button>
+            </a>
+            <button type="submit"
+                class="px-4 py-2 bg-[#39AA80] text-white text-sm rounded-md hover:bg-[#2F7B63] shadow-sm">
+                Update Service
             </button>
-        </a>
-        <button type="submit" form="form-id" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 shadow-sm">
-            Update Data
-        </button>
-    </div>
+        </div>
+    </form>
+
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const input = document.getElementById('service_description_input');
+        const container = document.getElementById('tag-container');
+        const hiddenInput = document.getElementById('service_description_hidden');
+        let tags = [];
+
+        // Initialize existing tags from database
+        const existingDescription = @json($oldData->deskripsi_service ?? '[]');
+        try {
+            const parsedTags = typeof existingDescription === 'string' 
+                ? JSON.parse(existingDescription) 
+                : existingDescription;
+            
+            if (Array.isArray(parsedTags)) {
+                tags = parsedTags;
+                // Create tag elements for existing tags
+                tags.forEach(tagText => {
+                    container.insertBefore(createTagElement(tagText), input);
+                });
+                updateHiddenInput();
+            }
+        } catch (error) {
+            console.error('Error parsing existing tags:', error);
+        }
+
+        function updateHiddenInput() {
+            hiddenInput.value = JSON.stringify(tags);
+        }
+
+        function createTagElement(tagText) {
+            const tag = document.createElement('span');
+            tag.className = 'inline-flex items-center bg-green-100 text-green-800 text-sm font-medium px-2 py-1 rounded-full';
+            tag.textContent = tagText;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'ml-1 text-red-500 hover:text-red-700 text-sm';
+            removeBtn.innerHTML = '&times;';
+            removeBtn.onclick = () => {
+                tags = tags.filter(t => t !== tagText);
+                container.removeChild(tag);
+                updateHiddenInput();
+            };
+
+            tag.appendChild(removeBtn);
+            return tag;
+        }
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && input.value.trim() !== '') {
+                e.preventDefault();
+                const tagText = input.value.trim();
+                if (!tags.includes(tagText)) {
+                    tags.push(tagText);
+                    container.insertBefore(createTagElement(tagText), input);
+                    updateHiddenInput();
+                }
+                input.value = '';
+            }
+        });
+    });
+</script>
 
 @endsection

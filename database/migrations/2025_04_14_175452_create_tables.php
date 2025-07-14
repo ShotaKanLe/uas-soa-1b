@@ -77,7 +77,12 @@ return new class extends Migration
             $table->id();
             $table->string('nama_bahan_bakar');
             $table->string('jenis_bahan_bakar');
-            $table->integer('emisi_karbon_permenit');
+            $table->decimal('co2perliter', 8, 4);
+            $table->decimal('ch4perliter', 8, 4);
+            $table->decimal('n2Operliter', 8, 4);
+            $table->decimal('Co2eperliter', 8, 4);
+            $table->decimal('WTTperliter', 8, 4);
+            $table->decimal('rerata_konsumsi_literperkm', 8, 4);
             $table->integer('harga_bahan_bakar_per_liter');
             $table->timestamps();
             $table->softDeletes();
@@ -110,8 +115,10 @@ return new class extends Migration
         // Tabel alamat rumah (membutuhkan karyawan)
         Schema::create('alamat_rumahs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_karyawan')->constrained('karyawan_perusahaans');
             $table->string('alamat_rumah');
+            $table->foreignId('id_karyawan')->constrained('karyawan_perusahaans');
+            $table->string('latitude');
+            $table->string('longitude');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -122,7 +129,6 @@ return new class extends Migration
             $table->string('judul_informasi');
             $table->foreignId('id_staff_mitra')->constrained('staff_mitras');
             $table->text('isi_informasi');
-            $table->string('tag');
             $table->string('gambar_informasi')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -135,6 +141,10 @@ return new class extends Migration
             $table->foreignId('id_perusahaan')->constrained('perusahaans');
             $table->date('tanggal_analisis');
             $table->text('file_pdf');
+            $table->integer('total_data')->nullable();
+            $table->decimal('total_emisi_karbon', 10, 2)->nullable();
+            $table->decimal('rata_rata_emisi', 10, 2)->nullable();
+            $table->json('filter_applied')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -148,8 +158,13 @@ return new class extends Migration
             $table->foreignId('id_perusahaan')->constrained('perusahaans');
             $table->foreignId('id_alamat')->constrained('alamat_rumahs');
             $table->date('tanggal_perjalanan');
-            $table->integer('durasi_perjalanan');
-            $table->integer('total_emisi_karbon');
+            $table->integer('jarak_perjalanan');
+            $table->decimal('total_co2', 8, 4);
+            $table->decimal('total_ch4', 8, 4);
+            $table->decimal('total_n2O', 8, 4);
+            $table->decimal('total_co2e', 8, 4);
+            $table->decimal('total_WTT', 8, 4);
+            $table->decimal('total_emisi_karbon', 8, 4);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -170,7 +185,7 @@ return new class extends Migration
             $table->text('nama_konsultasi');
             $table->date('tanggal_konsultasi');
             $table->text('isi_konsultasi');
-            $table->text('status_konsultasi');
+            $table->text('status_konsultasi')->default('OPEN');
             $table->foreignId('id_hasil_analisis')->constrained('hasil_analisis_emisis');
             $table->timestamps();
             $table->softDeletes();

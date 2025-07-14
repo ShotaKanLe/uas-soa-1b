@@ -13,23 +13,29 @@
         </a>
     </div>
 
-    <form id="form-id" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4" action="{{ route('karyawan.update', ['id' => $oldData->id]) }}" method="POST">
+    <form id="form-id" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6" action="{{ route('karyawan.update', ['id' => $oldData->id]) }}" method="POST">
         @csrf
         @method('PUT')
 
-        <!-- Nama Karyawan -->
+        <!-- Employee Name -->
         <div>
-            <label for="employee_name" class="block text-sm font-medium text-gray-700 mb-1">Employee Name <span class="text-red-500">*</span></label>
-            <input type="text" id="employee_name" name="employee_name" value="{{ old('employee_name', $oldData->nama_karyawan) }}" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" />
+            <label for="employee_name" class="block text-sm font-medium text-gray-800 mb-1">Employee Name <span class="text-red-500">*</span></label>
+            <input type="text" id="employee_name" name="employee_name"
+                value="{{ old('employee_name', $oldData->nama_karyawan) }}" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-400"
+                placeholder="John Doe" />
             @error('employee_name')
                 <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
             @enderror
         </div>
 
-        <!-- Jabatan -->
+        <!-- Position -->
         <div>
-            <label for="position" class="block text-sm font-medium text-gray-700 mb-1">Position<span class="text-red-500">*</span></label>
-            <input type="text" id="position" name="position" value="{{ old('position', $oldData->jabatan) }}" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" />
+            <label for="position" class="block text-sm font-medium text-gray-800 mb-1">Position <span class="text-red-500">*</span></label>
+            <input type="text" id="position" name="position"
+                value="{{ old('position', $oldData->jabatan) }}" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-400"
+                placeholder="Manager / Analyst" />
             @error('position')
                 <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
             @enderror
@@ -37,29 +43,36 @@
 
         <!-- Email -->
         <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
-            <input type="email" id="email" name="email" value="{{ old('email', $oldData->email) }}" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" />
+            <label for="email" class="block text-sm font-medium text-gray-800 mb-1">Email <span class="text-red-500">*</span></label>
+            <input type="email" id="email" name="email"
+                value="{{ old('email', $oldData->email) }}" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-400"
+                placeholder="email@example.com" />
             @error('email')
                 <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
             @enderror
         </div>
 
-        <!-- Jenis Kelamin -->
+        <!-- Gender -->
         <div>
-            <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Gender<span class="text-red-500">*</span></label>
-            <select id="gender" name="gender" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                <option value="L" {{ old('gender', $oldData->jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
-                <option value="P" {{ old('gender', $oldData->jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+            <label for="gender" class="block text-sm font-medium text-gray-800 mb-1">Gender <span class="text-red-500">*</span></label>
+            <select id="gender" name="gender" required
+                class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <option value="">Select Gender</option>
+                <option value="L" {{ old('gender', $oldData->jenis_kelamin) == 'L' ? 'selected' : '' }}>Male</option>
+                <option value="P" {{ old('gender', $oldData->jenis_kelamin) == 'P' ? 'selected' : '' }}>Female</option>
             </select>
             @error('gender')
                 <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
             @enderror
         </div>
 
-        <!-- Tanggal Lahir -->
+        <!-- Date of Birth -->
         <div>
-            <label for="birth_date" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir <span class="text-red-500">*</span></label>
-            <input type="date" id="birth_date" name="birth_date" value="{{ old('birth_date', $oldData->tanggal_lahir) }}" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" />
+            <label for="birth_date" class="block text-sm font-medium text-gray-800 mb-1">Date of Birth <span class="text-red-500">*</span></label>
+            <input type="date" id="birth_date" name="birth_date"
+                value="{{ old('birth_date', $oldData->tanggal_lahir) }}" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900" />
             @error('birth_date')
                 <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
             @enderror
@@ -82,7 +95,7 @@
                 Cancel
             </button>
         </a>
-        <button type="submit" form="form-id" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 shadow-sm">
+        <button type="submit" form="form-id" class="px-4 py-2 bg-[#39AA80] text-white rounded-md hover:bg-[#2F7B63] shadow-sm">
             Update Data
         </button>
     </div>

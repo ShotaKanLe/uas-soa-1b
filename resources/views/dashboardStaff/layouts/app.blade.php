@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link rel="icon" href="{{ asset('favicon_ico.ico') }}" type="image/x-icon">
     <script>
         tailwind.config = {
             theme: {
@@ -118,6 +119,7 @@
                 durasi_service: '{{ $item->durasi_service }} Days',
                 harga_service: 'Rp. {{ $item->harga_service }}',
                 pembuat_service: '{{ $item->staffMitra->nama_staff }}',
+                deskripsi_service: '{{ $item->deskripsi_service }}',
             }@if (!$loop->last),@endif
             @endforeach
         ],
@@ -130,8 +132,13 @@
                 id: '{{ $item->id }}',
                 nama_bahan_bakar: '{{ $item->nama_bahan_bakar }}',
                 jenis_bahan_bakar: '{{ $item->jenis_bahan_bakar }}',
-                emisi_karbon: '{{ $item->emisi_karbon_permenit }}',
-                harga_bahan_bakar: '{{ $item->harga_bahan_bakar_per_liter }}',
+                co2perliter: '{{ $item->co2perliter }}',
+                ch4perliter: '{{ $item->ch4perliter }}',
+                n2Operliter: '{{ $item->n2Operliter }}',
+                co2eperliter: '{{ $item->Co2eperliter }}',
+                WTTperliter: '{{ $item->WTTperliter }}',
+                rerata_konsumsi_literperkm: '{{ $item->rerata_konsumsi_literperkm }} l/km',
+                harga_bahan_bakar: 'Rp. {{ $item->harga_bahan_bakar_per_liter }}',
                 created_at: '{{ $item->created_at }}',
                 updated_at: '{{ $item->updated_at }}',
             }@if (!$loop->last),@endif

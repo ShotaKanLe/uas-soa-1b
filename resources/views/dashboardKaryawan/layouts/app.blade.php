@@ -7,6 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="icon" href="{{ asset('favicon_ico.ico') }}" type="image/x-icon">
+
     <script>
         tailwind.config = {
             theme: {
@@ -93,6 +96,11 @@
         },
         
         @if (isset($data))
+        @if ($dataType == 'karyawan')
+        tableData: [
+            
+        ]
+        @endif
         @if ($dataType == 'perjalanan')
         tableData: [
             @foreach ($data as $index => $item)
@@ -104,7 +112,11 @@
                 bahan_bakar: '{{ $item->bahanBakar->nama_bahan_bakar }}',
                 alamat: '{{ $item->alamat->alamat_rumah }}',
                 tanggal_perjalanan: '{{ $item->tanggal_perjalanan }}',
-                durasi_perjalanan: '{{ $item->durasi_perjalanan }}',
+                total_co2: '{{ $item->total_co2 }}',
+                total_co2e: '{{ $item->total_co2e }}',
+                total_ch4: '{{ $item->total_ch4 }}',
+                total_n2O: '{{ $item->total_n2O }}',
+                total_WTT: '{{ $item->total_WTT }}',
                 total_emisi_karbon: '{{ $item->total_emisi_karbon }}',
             }@if (!$loop->last),@endif
             @endforeach
@@ -118,196 +130,27 @@
                 id: '{{ $item->id }}',
                 nama_karyawan: '{{ $item->karyawanPerusahaan->nama_karyawan }}',
                 alamat: '{{ $item->alamat_rumah }}',
-            }@if (!$loop->last),@endif
-            @endforeach
-        ],
-        @endif
-        @if ($dataType == 'karyawan')
-        tableData: [
-            @foreach ($data as $index => $item)
-            {
-                no: {{ $index + 1 }},
-                id: '{{ $item->id }}',
-                nama_perusahaan: '{{ $item->perusahaan->nama_perusahaan }}',
-                nama_karyawan: '{{ $item->nama_karyawan }}',
-                jabatan: '{{ $item->jabatan }}',
-                email: '{{ $item->email }}',
-                jenis_kelamin: '{{ $item->jenis_kelamin }}',
-                tanggal_lahir: '{{ $item->tanggal_lahir }}',
-                created_at: '{{ $item->created_at }}',
-                updated_at: '{{ $item->updated_at }}',
-            }@if (!$loop->last),@endif
-            @endforeach
-        ],
-        @endif
-        @if ($dataType == 'konsultasi')
-        tableData: [
-            @foreach ($data as $index => $item)
-            {
-                no: {{ $index + 1 }},
-                id: '{{ $item->id }}',
-                nama_perusahaan: '{{ $item->perusahaan->nama_perusahaan }}',
-                tanggal_konsultasi: '{{ $item->tanggal_konsultasi }}',
-                isi_konsultasi: '{{ $item->isi_konsultasi }}',
-                id_hasil_analisis: '{{ $item->id_hasil_analisis }}',
-                nama_konsultasi: '{{ $item->nama_konsultasi }}',
-                nama_analisis: '{{ $item->hasilAnalisisEmisi->nama_analisis }}',
-                created_at: '{{ $item->created_at }}',
-                updated_at: '{{ $item->updated_at }}',
-            }@if (!$loop->last),@endif
-            @endforeach
-        ],
-        @endif
-        @if ($dataType == 'analisis')
-        tableData: [
-            @foreach ($data as $index => $item)
-            {
-                no: {{ $index + 1 }},
-                id: '{{ $item->id }}',
-                nama_perusahaan: '{{ $item->perusahaan->nama_perusahaan }}',
-                nama_analisis: '{{ $item->nama_analisis }}',
-                tanggal_analisis: '{{ $item->tanggal_analisis }}',
-                file_pdf: '{{ $item->file_pdf }}',
-                created_at: '{{ $item->created_at }}',
-                updated_at: '{{ $item->updated_at }}',
+                longitude: '{{ $item->longitude }}',
+                latitude: '{{ $item->latitude }}',
             }@if (!$loop->last),@endif
             @endforeach
         ],
         @endif
         @endif
-        
-        // Chart data
-        chartData: {
-            day: {
-                labels: ['12AM', '3AM', '6AM', '9AM', '12PM', '3PM', '6PM', '9PM'],
-                values: [12, 19, 15, 25, 32, 38, 33, 28]
-            },
-            week: {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                values: [28, 32, 36, 30, 25, 40, 35]
-            },
-            month: {
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                values: [85, 100, 90, 120]
-            },
-            year: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                values: [200, 190, 210, 240, 280, 250, 290, 300, 270, 320, 310, 350]
-            }
-        },
-        
-        drawChart() {
-            this.$nextTick(() => {
-                const canvas = this.$refs.chartCanvas;
-                if (!canvas) return;
-                
-                const ctx = canvas.getContext('2d');
-                if (!ctx) return;
-                
-                // Clear canvas
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Set canvas dimensions
-                const rect = canvas.getBoundingClientRect();
-                canvas.width = rect.width;
-                canvas.height = rect.height;
-                
-                // Chart dimensions
-                const padding = 40;
-                const chartWidth = rect.width - padding * 2;
-                const chartHeight = rect.height - padding * 2;
-                
-                // Get data for the selected period
-                const data = this.chartData[this.chartPeriod];
-                const { labels, values } = data;
-                
-                // Find max value for scaling
-                const maxValue = Math.max(...values);
-                
-                // Draw axes
-                ctx.beginPath();
-                ctx.strokeStyle = '#e5e7eb'; // gray-200
-                ctx.lineWidth = 1;
-                ctx.moveTo(padding, padding);
-                ctx.lineTo(padding, chartHeight + padding);
-                ctx.lineTo(chartWidth + padding, chartHeight + padding);
-                ctx.stroke();
-                
-                // Draw grid lines
-                const gridLines = 5;
-                ctx.beginPath();
-                ctx.strokeStyle = '#f3f4f6'; // gray-100
-                ctx.lineWidth = 1;
-                for (let i = 1; i <= gridLines; i++) {
-                    const y = padding + (chartHeight / gridLines) * i;
-                    ctx.moveTo(padding, y);
-                    ctx.lineTo(chartWidth + padding, y);
-                }
-                ctx.stroke();
-                
-                // Draw data points and lines
-                const pointSpacing = chartWidth / (labels.length - 1);
-                
-                // Draw line
-                ctx.beginPath();
-                ctx.strokeStyle = '#10b981'; // green-500
-                ctx.lineWidth = 2;
-                ctx.moveTo(padding, chartHeight + padding - (values[0] / maxValue) * chartHeight);
-                
-                for (let i = 1; i < labels.length; i++) {
-                    const x = padding + pointSpacing * i;
-                    const y = chartHeight + padding - (values[i] / maxValue) * chartHeight;
-                    ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-                
-                // Draw points
-                for (let i = 0; i < labels.length; i++) {
-                    const x = padding + pointSpacing * i;
-                    const y = chartHeight + padding - (values[i] / maxValue) * chartHeight;
-                    
-                    ctx.beginPath();
-                    ctx.fillStyle = '#ffffff'; // white
-                    ctx.strokeStyle = '#10b981'; // green-500
-                    ctx.lineWidth = 2;
-                    ctx.arc(x, y, 4, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
-                }
-                
-                // Draw labels
-                ctx.fillStyle = '#6b7280'; // gray-500
-                ctx.font = '12px Outfit, sans-serif';
-                ctx.textAlign = 'center';
-                
-                for (let i = 0; i < labels.length; i++) {
-                    const x = padding + pointSpacing * i;
-                    const y = chartHeight + padding + 20;
-                    ctx.fillText(labels[i], x, y);
-                }
-                
-                // Draw values on y-axis
-                ctx.textAlign = 'right';
-                for (let i = 0; i <= gridLines; i++) {
-                    const value = Math.round((maxValue / gridLines) * (gridLines - i));
-                    const y = padding + (chartHeight / gridLines) * i + 4;
-                    ctx.fillText(value.toString(), padding - 10, y);
-                }
-            });
-        }
+    
     }"
     x-init="$watch('chartPeriod', () => drawChart()); $nextTick(() => drawChart())">
 
         <!-- Navbar -->
-        @include('dashboardPerusahaan.partials.navbar')
+        @include('dashboardKaryawan.partials.navbar')
         
         <!-- Sidebar for mobile (overlay) -->
-        @include('dashboardPerusahaan.partials.sidebarMobile')
+        @include('dashboardKaryawan.partials.sidebarMobile')
 
         <!-- Content area with sidebar -->
         <div class="flex pt-16 min-h-screen">
             <!-- Sidebar (desktop) -->
-            @include('dashboardPerusahaan.partials.sidebar')
+            @include('dashboardKaryawan.partials.sidebar')
 
             <!-- Main content -->
             <main 

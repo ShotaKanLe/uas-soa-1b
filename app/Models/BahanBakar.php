@@ -10,5 +10,6 @@ class BahanBakar extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
     protected $guarded = [];
 }

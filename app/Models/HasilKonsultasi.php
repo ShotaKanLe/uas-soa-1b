@@ -10,6 +10,7 @@ class HasilKonsultasi extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
     protected $guarded = [];
 
     public function perusahaan()
@@ -20,5 +21,10 @@ class HasilKonsultasi extends Model
     public function hasilAnalisisEmisi()
     {
         return $this->belongsTo(HasilAnalisisEmisi::class, 'id_hasil_analisis');
+    }
+
+    public function pesan()
+    {
+        return $this->hasOne(Pesan::class, 'id_konsultasi');
     }
 }

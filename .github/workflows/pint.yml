@@ -1,0 +1,12 @@
+# .github/workflows/pint.yml
+name: Laravel Pint
+
+on: [push, pull_request]
+
+jobs:
+  pint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: php-actions/composer@v6
+      - run: ./vendor/bin/pint --test

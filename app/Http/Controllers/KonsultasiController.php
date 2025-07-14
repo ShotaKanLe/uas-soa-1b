@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\HasilAnalisisEmisi;
 use App\Models\HasilKonsultasi;
-use App\Models\Perusahaan;
 use App\Models\Pesan;
 use App\Models\StaffPerusahaan;
 use Carbon\Carbon;
@@ -14,26 +13,32 @@ class KonsultasiController extends Controller
 {
     public function index()
     {
-        if ($redirect = $this->checkifLoginForCompany()) return $redirect;
+        if ($redirect = $this->checkifLoginForCompany()) {
+            return $redirect;
+        }
         $konsultasis = HasilKonsultasi::latest()->paginate(5);
-        $dataType = 'konsultasi';
+        $dataType    = 'konsultasi';
 
         return view('dashboardPerusahaan.layouts.konsultasi.view', ['data' => $konsultasis, 'dataType' => $dataType]);
     }
 
     public function indexStaff()
     {
-        if ($redirect = $this->checkifLoginForStaff()) return $redirect;
+        if ($redirect = $this->checkifLoginForStaff()) {
+            return $redirect;
+        }
 
         $konsultasis = HasilKonsultasi::latest()->paginate(5);
-        $dataType = 'konsultasi';
+        $dataType    = 'konsultasi';
 
         return view('dashboardStaff.layouts.konsultasi.view', ['data' => $konsultasis, 'dataType' => $dataType]);
     }
 
     public function add()
     {
-        if ($redirect = $this->checkifLoginForCompany()) return $redirect;
+        if ($redirect = $this->checkifLoginForCompany()) {
+            return $redirect;
+        }
         $analisis = HasilAnalisisEmisi::latest()->paginate(5);
         $dataType = 'analisis';
 
@@ -42,7 +47,9 @@ class KonsultasiController extends Controller
 
     public function upload(Request $request)
     {
-        if ($redirect = $this->checkifLoginForCompany()) return $redirect;
+        if ($redirect = $this->checkifLoginForCompany()) {
+            return $redirect;
+        }
 
         // dd($request->all());
 
@@ -59,15 +66,26 @@ class KonsultasiController extends Controller
             'nama_konsultasi' => $request->discussion_name,
             'tanggal_konsultasi' => Carbon::now(),
             'isi_konsultasi' => $request->discussion_message,
-            'id_hasil_analisis' => $request->selected_id
+            'id_hasil_analisis' => $request->selected_id,
         ]);
 
         return redirect('dashboard/perusahaan/konsultasi/add')->with('success', 'Consultation Successfully Added');
     }
 
-    public function uploadStaff(Request $request)
+    public function delete($id)
     {
-        if ($redirect = $this->checkifLoginForStaff()) return $redirect;
+        if ($redirect = $this->checkifLoginForCompany()) {
+            return $redirect;
+        }
+        HasilKonsultasi::destroy($id);
+        return redirect('dashboard/perusahaan/konsultasi')->with('success', 'Data Successfully Deleted');
+    }
+
+    public function replyStaff(Request $request)
+    {
+        if ($redirect = $this->checkifLoginForStaff()) {
+            return $redirect;
+        }
 
         $id = session('id');
 
@@ -96,7 +114,8 @@ class KonsultasiController extends Controller
             'file_pdf' => $fileName,
         ]);
 
-        return redirect('dashboard/staff/konsultasi/')->with('success', 'Consultation Successfully Added');
-    }
+        HasilKonsultasi::where('id', $request->consultation_id)->update(['status_konsultasi' => 'CLOSED']);
 
+        return redirect('dashboard/staff/konsultasi/')->with('success', 'Consultation Reply Successfully Added');
+    }
 }

@@ -23,6 +23,15 @@
         </div>
     </div>
 
+    @if (session('success'))
+        <div class="mb-4 p-4 mt-2 rounded-md border border-green-300 bg-green-50 text-green-800 shadow-sm flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>{{ session('success') }}</span>
+        </div>
+    @endif
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -71,7 +80,7 @@
         >
             <!-- Modal Header -->
             <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 class="text-xl font-bold text-gray-800">Service Detail</h3>
+                <h3 class="text-xl font-bold text-gray-800">Employee Detail</h3>
                 <button 
                     @click="showModal = false; confirmDelete = false" 
                     class="text-gray-400 hover:text-gray-600 text-2xl font-bold focus:outline-none"
@@ -81,50 +90,61 @@
             </div>
 
             <!-- Modal Content -->
-            <div class="space-y-4 text-sm text-gray-700">
-                <div>
-                    <span class="block font-semibold text-gray-800">Employee Name :</span>
-                    <span x-text="selectedRow.nama_karyawan" class="block mt-1"></span>
-                </div>
+            <div class="space-y-5 text-sm text-gray-700">
+    <!-- Employee Name -->
+    <div>
+        <span class="block font-semibold text-gray-800">Employee Name:</span>
+        <span x-text="selectedRow.nama_karyawan" class="block mt-1 text-gray-900"></span>
+    </div>
 
-                <div>
-                    <span class="block font-semibold text-gray-800">Position :</span>
-                    <span x-text="selectedRow.jabatan" class="block mt-1"></span>
-                </div>
+    <!-- Position -->
+    <div>
+        <span class="block font-semibold text-gray-800">Position:</span>
+        <span x-text="selectedRow.jabatan" class="block mt-1 text-gray-900"></span>
+    </div>
 
-                <div>
-                    <span class="block font-semibold text-gray-800">Email :</span>
-                    <span x-text="selectedRow.email" class="block mt-1 whitespace-pre-line"></span>
-                </div>
+    <!-- Email -->
+    <div>
+        <span class="block font-semibold text-gray-800">Email:</span>
+        <span x-text="selectedRow.email" class="block mt-1 whitespace-pre-line text-gray-900"></span>
+    </div>
 
-                <div>
-                    <span class="block font-semibold text-gray-800">Gender :</span>
-                    <span x-text="selectedRow.jenis_kelamin" class="block mt-1"></span>
-                </div>
-                
-                <div>
-                    <span class="block font-semibold text-gray-800">Date of Birth :</span>
-                    <span x-text="selectedRow.tanggal_lahir" class="block mt-1"></span>
-                </div>
+    <!-- Gender -->
+    <div>
+        <span class="block font-semibold text-gray-800 mb-1">Gender:</span>
+        <template x-if="selectedRow.jenis_kelamin === 'L'">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                Male
+            </span>
+        </template>
+        <template x-if="selectedRow.jenis_kelamin === 'P'">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                Female
+            </span>
+        </template>
+        <template x-if="selectedRow.jenis_kelamin !== 'L' && selectedRow.jenis_kelamin !== 'P'">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                Unknown
+            </span>
+        </template>
+    </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <span class="block font-semibold text-gray-800">Created At:</span>
-                        <span x-text="selectedRow.created_at" class="block mt-1"></span>
-                    </div>
-                    <div>
-                        <span class="block font-semibold text-gray-800">Latest Update:</span>
-                        <span x-text="selectedRow.updated_at" class="block mt-1"></span>
-                    </div>
-                </div>
+    <!-- Date of Birth -->
+    <div>
+        <span class="block font-semibold text-gray-800">Date of Birth:</span>
+        <span x-text="selectedRow.tanggal_lahir" class="block mt-1 text-gray-900"></span>
+    </div>
 
-                <template x-if="selectedRow.gambar_informasi">
-                    <div>
-                        <span class="block font-semibold text-gray-800 mb-1">Image:</span>
-                        <img :src="'/informasi_images/' + selectedRow.gambar_informasi" class="w-40 h-40 object-cover rounded-lg border" alt="Image">
-                    </div>
-                </template>
-            </div>
+    <!-- Image -->
+    <template x-if="selectedRow.gambar_informasi">
+        <div>
+            <span class="block font-semibold text-gray-800 mb-1">Image:</span>
+            <img :src="'/informasi_images/' + selectedRow.gambar_informasi"
+                class="w-40 h-40 object-cover rounded-lg border border-gray-300 shadow-sm" alt="Image">
+        </div>
+    </template>
+</div>
+
 
             <!-- Modal Actions -->
             <div class="flex justify-between items-center mt-6 pt-4 border-t">

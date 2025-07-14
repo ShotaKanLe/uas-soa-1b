@@ -20,7 +20,7 @@
         <h2 class="text-xl font-semibold text-gray-800">Services</h2>
         <div class="flex flex-wrap gap-2">
             <a href="{{ route('service.add') }}">
-                <button class="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 border border-green-600">
+                <button class="flex items-center gap-2 px-4 py-2 bg-[#39AA80] text-white rounded-md hover:bg-[#2F7B63] border border-green-600">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -30,6 +30,15 @@
         </div>
     </div>
 
+    @if (session('success'))
+            <div class="mb-4 p-4 rounded-md border border-green-300 bg-green-50 text-green-800 shadow-sm flex items-start gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -37,8 +46,8 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service Name</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service Duration</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service Price</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service Publisher</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service Price (IDR)</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Publisher Name</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                 </tr>
             </thead>
@@ -88,16 +97,43 @@
                 </button>
             </div>
 
-            <!-- Modal Content -->
-            <div class="space-y-3 text-sm text-gray-700">
-                <p><span class="font-semibold">Name:</span> <span x-text="selectedRow.nama_service"></span></p>
-                <p><span class="font-semibold">Duration:</span> <span x-text="selectedRow.durasi_service"></span></p>
-                <p><span class="font-semibold">Price:</span> <span x-text="selectedRow.harga_service"></span></p>
-                <p><span class="font-semibold">Publisher:</span> <span x-text="selectedRow.pembuat_service"></span></p>
-                <template x-if="selectedRow.image_service">
-                    <img :src="'/service_images/' + selectedRow.image_service" class="w-36 h-36 object-cover rounded-lg border mt-2" alt="Image">
-                </template>
-            </div>
+            <div class="space-y-5 text-sm text-gray-800">
+
+    <!-- Service Name -->
+    <div class="flex items-start gap-2">
+        <span class="font-medium w-36">Service Name:</span>
+        <span class="text-gray-700" x-text="selectedRow.nama_service"></span>
+    </div>
+
+    <!-- Duration -->
+    <div class="flex items-start gap-2">
+        <span class="font-medium w-36">Duration:</span>
+        <span class="text-gray-700" x-text="selectedRow.durasi_service"></span>
+    </div>
+
+    <!-- Price -->
+    <div class="flex items-start gap-2">
+        <span class="font-medium w-36">Price (IDR):</span>
+        <span class="text-gray-700" x-text="selectedRow.harga_service"></span>
+    </div>
+
+    <!-- Description (list style) -->
+    <div class="flex items-start gap-2">
+        <span class="font-medium w-36">Description :</span>
+        <div class="flex flex-wrap gap-2">
+            <template x-for="feature in JSON.parse(selectedRow.deskripsi_service)" :key="feature">
+                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm" x-text="feature"></span>
+            </template>
+        </div>
+    </div>
+
+    <!-- Publisher -->
+    <div class="flex items-start gap-2">
+        <span class="font-medium w-36">Publisher Name:</span>
+        <span class="text-gray-700" x-text="selectedRow.pembuat_service"></span>
+    </div>
+</div>
+
 
             <!-- Modal Actions -->
             <div class="flex justify-between items-center mt-6 pt-4 border-t">

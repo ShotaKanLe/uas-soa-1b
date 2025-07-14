@@ -11,6 +11,7 @@ class PerjalananKaryawanPerusahaan extends Model
     // protected $table = 'perjalananKaryawans';
     use HasFactory;
     use SoftDeletes;
+
     protected $guarded = [];
 
     public function karyawanPerusahaan()

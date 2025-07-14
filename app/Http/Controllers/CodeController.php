@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Code;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Models\Code;
 
 class CodeController extends Controller
 {
@@ -24,7 +24,7 @@ class CodeController extends Controller
         $code = Code::create([
             'code' => $codeStr,
             'code_type' => 'STAFF',
-            'status' => 'UNUSED'
+            'status' => 'UNUSED',
         ]);
 
         return response()->json(['staff_code' => $codeStr]);

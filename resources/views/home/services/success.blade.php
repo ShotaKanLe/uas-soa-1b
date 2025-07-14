@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EmpCarbon - Service Registration</title>
+    <title>EmpCarbon - Service Registration Success</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
@@ -23,6 +23,21 @@
                     },
                     borderRadius: {
                         'md': '0.375rem',
+                    },
+                    animation: {
+                        'fadeIn': 'fadeIn 0.5s ease-in-out',
+                        'slideUp': 'slideUp 0.6s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
                     }
                 },
             },
@@ -33,84 +48,111 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
         }
 
-        /* Shadow with blue tint */
-        .shadow-blue-100 {
-            box-shadow: 0 1px 3px 0 rgba(59, 130, 246, 0.1), 0 1px 2px 0 rgba(59, 130, 246, 0.06);
+        .gradient-bg {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         }
-        
-        .shadow-green-100 {
-            box-shadow: 0 1px 3px 0 rgba(34, 197, 94, 0.1), 0 1px 2px 0 rgba(34, 197, 94, 0.06);
+
+        .success-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .code-display {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px dashed #10b981;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+            animation: pulse-slow 3s ease-in-out infinite;
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .floating-elements::before,
+        .floating-elements::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-elements::before {
+            top: -100px;
+            left: -100px;
+            animation-delay: -3s;
+        }
+
+        .floating-elements::after {
+            bottom: -100px;
+            right: -100px;
+            animation-delay: -1s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .icon-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .copy-button {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .copy-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
         }
     </style>
-    
 </head>
-<body class="bg-gray-50 font-outfit">
+<body class="font-outfit">
+    <div class="floating-elements"></div>
+    
     <div x-data="{ 
-        selectedService: null,
-        email: '',
-        companyName: '',
-        latitude: '',
-        longitude: '',
-        showPassword: false,
-        showConfirmPassword: false,
-        errors: {},
+        code: '{{ $code ?? 'COMP-2024-001' }}',
+        copied: false,
         
-        services: [
-            @foreach ($services as $service)
-            {
-                id: '{{ $service->id }}',
-                name: '{{ $service->nama_service }}',
-                price: '{{ $service->harga_service }}',
-                period: 'monthly',
-                description: '{{ $service->deskripsi_service }}',
-                features: ['Carbon footprint tracking', 'Basic reporting', 'Email support'],
-                recommended: false
-            },
-            @endforeach
-        ],
-        
-        selectService(serviceId) {
-            this.selectedService = serviceId;
-            if (this.errors.service) {
-                delete this.errors.service;
-            }
-        },
-        
-        validateForm() {
-            this.errors = {};
-            
-            if (!this.email) {
-                this.errors.email = 'Email is required';
-            } else if (!/\S+@\S+\.\S+/.test(this.email)) {
-                this.errors.email = 'Email is invalid';
-            }
-            
-            if (!this.selectedService) {
-                this.errors.service = 'Please select a service plan';
-            }
-            
-            return Object.keys(this.errors).length === 0;
-        },
-        
-        {{-- submitForm() {
-            if (this.validateForm()) {
-                const selectedPlan = this.services.find(s => s.id === this.selectedService);
-                alert(`Registration successful for ${selectedPlan.name}! Redirecting to payment...`);
-            }
-        }, --}}
-        
-        getSelectedService() {
-            return this.services.find(s => s.id === this.selectedService);
+        copyCode() {
+            navigator.clipboard.writeText(this.code).then(() => {
+                this.copied = true;
+                setTimeout(() => {
+                    this.copied = false;
+                }, 2000);
+            });
         }
-    }">
+    }" x-init="setTimeout(() => { $el.classList.add('animate-fadeIn') }, 100)">
+        
         <!-- Header -->
-        <header class="bg-white border-b border-gray-300 shadow-sm">
+        <header class="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 shadow-sm sticky top-0 z-10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex items-center">
-                        <button class="mr-2 p-2 rounded-md text-gray-600 hover:bg-gray-100">
+                        <button class="mr-2 p-2 rounded-md text-gray-600 hover:bg-gray-100 transition-colors">
                             <a href="{{ url('/') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -127,147 +169,143 @@
                         </div>
                     </div>
                     <div>
-                        <h1 class="text-lg font-semibold text-gray-800">Service Registration</h1>
+                        <h1 class="text-lg font-semibold text-gray-800">Registration Success</h1>
                     </div>
-                    <div class="w-24"></div> <!-- Empty div for balance -->
+                    <div class="w-24"></div>
                 </div>
             </div>
         </header>
 
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Registration Form Section -->
-            <div class="bg-white rounded-md shadow-sm shadow-blue-100 border border-gray-300 p-6 mb-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-6">Registration Details</h2>
-
-                <form class="space-y-6" id="payment-form" method="post" action="{{ route('getSnapToken') }}">
-                    <!-- Email Input -->
-                    <div>
-                        <label for="companyName" class="block text-sm font-medium text-gray-700 mb-1">
-                            Company Name <span class="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="companyName"
-                            name="companyName"
-                            x-model="companyName"
-                            class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                            :class="errors.companyName ? 'border-red-300' : 'border-gray-300'"
-                            placeholder="Your Company Name"
-                        />
-                        <div x-show="errors.companyName" class="mt-1 text-sm text-red-600" x-text="errors.companyName" x-cloak></div>
+        <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Success Card -->
+            <div class="success-card rounded-2xl p-8 mb-6 relative overflow-hidden animate-slideUp">
+                <!-- Success Icon -->
+                <div class="text-center mb-8">
+                    <div class="icon-success w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
                     </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Registration Successful!</h2>
+                    <p class="text-gray-600 text-lg">Your company account has been successfully created</p>
+                </div>
 
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
-                            Email Address <span class="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            x-model="email"
-                            class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                            :class="errors.email ? 'border-red-300' : 'border-gray-300'"
-                            placeholder="your.email@example.com"
-                        />
-                        <div x-show="errors.email" class="mt-1 text-sm text-red-600" x-text="errors.email" x-cloak></div>
-                    </div>
-
-                    <div onclick="openMapModal()" class="bg-blue-500 text-white px-4 py-2 rounded">
-                        Select Company Address
+                <!-- Company Code Section -->
+                <div class="mb-8">
+                    <div class="text-center mb-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Your Company Code</h3>
+                        <p class="text-gray-600">Use this code for staff registration in the application</p>
                     </div>
                     
-                    <input type="hidden" name="latitude" id="latitude">
-                    <input type="hidden" name="longitude" id="longitude">
-                    <input type="hidden" name="idService" id="idService" x-model="selectedService">
-
-                    <!-- Service Summary -->
-                    <div x-show="selectedService" class="bg-gray-50 p-4 rounded-md border border-gray-200" x-cloak>
-                        <h3 class="text-sm font-medium text-gray-700 mb-2">Selected Plan</h3>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="font-medium text-gray-900" x-text="getSelectedService()?.name"></p>
-                                <p class="text-sm text-gray-500" x-text="getSelectedService()?.description"></p>
+                    <div class="code-display rounded-xl p-6 relative">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="text-center">
+                                    <div class="text-3xl font-mono font-bold text-[#39AA80] mb-2" x-text="code"></div>
+                                    <p class="text-sm text-gray-500">Company Registration Code</p>
+                                </div>
                             </div>
-                            <p class="font-bold text-gray-900">
-                                <span x-text="getSelectedService()?.price"></span>/<span x-text="getSelectedService()?.period"></span>
-                            </p>
+                            <button 
+                                @click="copyCode()"
+                                class="copy-button ml-4 bg-[#39AA80] hover:bg-[#2d8a64] text-white px-4 py-2 rounded-lg flex items-center gap-2 font-medium"
+                            >
+                                <svg x-show="!copied" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                </svg>
+                                <svg x-show="copied" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span x-text="copied ? 'Copied!' : 'Copy'"></span>
+                            </button>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Payment Security Notice -->
-                    <div class="flex items-center gap-2 p-4 bg-blue-50 rounded-md border border-blue-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                <!-- Information Cards -->
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <!-- Email Notification -->
+                    {{-- <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                        <div class="flex items-start gap-3">
+                            <div class="bg-blue-100 p-2 rounded-lg">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-blue-900 mb-1">Email Confirmation</h4>
+                                <p class="text-sm text-blue-700">Invoice details have been sent to your company email address</p>
+                            </div>
+                        </div>
+                    </div> --}}
+
+                    <!-- Next Steps -->
+                    {{-- <div class="bg-green-50 border border-green-200 rounded-xl p-6">
+                        <div class="flex items-start gap-3">
+                            <div class="bg-green-100 p-2 rounded-lg">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-green-900 mb-1">Next Steps</h4>
+                                <p class="text-sm text-green-700">Create staff accounts using your company code</p>
+                            </div>
+                        </div>
+                    </div> --}}
+                </div>
+
+                <!-- Action Button -->
+                <div class="text-center">
+                    <a href="{{ route('register') }}" class="inline-flex items-center gap-3 gradient-bg text-white px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                         </svg>
-                        <p class="text-sm text-blue-700">
-                            Your payment information is secure. We use industry-standard encryption to protect your data.
-                        </p>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <div class="pt-4 border-t border-gray-200">
-                        <button
-                            type="submit"
-                            id="pay-button"
-                            class="w-full md:w-auto bg-[#39AA80] hover:bg-[#39AA80] text-white px-6 py-2 rounded-md border border-[#39AA80] shadow-sm shadow-blue-50 flex items-center justify-center gap-2 transition-colors"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                            </svg>
-                            <span>Proceed to Payment</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                            </svg>
-                        </button>
-                        <p class="mt-2 text-xs text-gray-500 flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Registration takes less than 2 minutes
-                        </p>
-                    </div>
-                </form>
+                        <span>Create Staff Account Now</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </a>
+                </div>
             </div>
         </main>
     </div>
 
+    <!-- Map Modal (keeping original functionality) -->
     <div id="mapModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded shadow-lg w-[90%] h-[80%] relative">
-            <div class="p-4 font-bold border-b">Tentukan Lokasi</div>
+        <div class="bg-white rounded-xl shadow-2xl w-[90%] h-[80%] relative overflow-hidden">
+            <div class="p-4 font-bold border-b bg-gray-50">Tentukan Lokasi</div>
             <div id="map" class="w-full h-[80%]"></div>
-            <div class="p-4 flex justify-end gap-2 border-t">
-                <button onclick="closeMapModal()" class="bg-gray-400 text-white px-4 py-2 rounded">Batal</button>
-                <button onclick="submitLocation()" class="bg-green-500 text-white px-4 py-2 rounded">OK</button>
+            <div class="p-4 flex justify-end gap-2 border-t bg-gray-50">
+                <button onclick="closeMapModal()" class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition-colors">Batal</button>
+                <button onclick="submitLocation()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">OK</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Status Modal (keeping original functionality) -->
     <div id="status-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white w-full max-w-md rounded-xl shadow-xl p-6 relative">
+        <div class="bg-white w-full max-w-md rounded-xl shadow-2xl p-6 relative">
             <div class="flex justify-between items-center border-b border-gray-200 pb-3 mb-4">
                 <h3 class="text-xl font-semibold text-gray-900" id="modal-title">Status</h3>
                 <button id="modal-close" class="text-gray-500 hover:text-gray-700 text-2xl leading-none font-semibold">&times;</button>
             </div>
             <p class="text-sm text-gray-700" id="modal-message">Pesan akan muncul di sini.</p>
             <div class="mt-5 text-right">
-                <button id="modal-ok" class="bg-[] hover:bg-green-600 text-white px-4 py-2 rounded-md transition">
+                <button id="modal-ok" class="bg-[#39AA80] hover:bg-[#2d8a64] text-white px-4 py-2 rounded-lg transition-colors">
                     OK
                 </button>
             </div>
         </div>
     </div>
 
-
-
+    <!-- Keep all original scripts -->
     <script>
         let map, marker;
         let selectedLat, selectedLng;
 
         function openMapModal() {
             document.getElementById('mapModal').classList.remove('hidden');
-            setTimeout(initMap, 100); // Delay agar modal siap
+            setTimeout(initMap, 100);
         }
 
         function closeMapModal() {
@@ -275,8 +313,8 @@
         }
 
         function initMap() {
-            if (map) return; // Sudah pernah dibuka
-            map = L.map('map').setView([-0.9471, 100.4172], 13); // Titik awal (Padang)
+            if (map) return;
+            map = L.map('map').setView([-0.9471, 100.4172], 13);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
@@ -304,107 +342,8 @@
             document.getElementById('longitude').value = selectedLng;
 
             closeMapModal();
-            // document.getElementById('locationForm').submit();
-        }
-    </script>
-
-    <script>
-        const payButton = document.getElementById('pay-button');
-        const form = document.getElementById('payment-form');
-
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            let savedToken = localStorage.getItem('snap_token');
-
-            if (savedToken) {
-                launchSnap(savedToken);
-            } else {
-                let formData = new FormData(form);
-
-                fetch('{{ route('getSnapToken') }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.token) {
-                        localStorage.setItem('snap_token', data.token);
-                        launchSnap(data.token);
-                    } else {
-                        alert("Gagal mendapatkan token pembayaran.");
-                        console.error(data);
-                    }
-                })
-                .catch(error => {
-                    alert("Kesalahan saat mengambil snap token.");
-                    console.error(error);
-                });
-            }
-        });
-
-        function launchSnap(token) {
-            snap.pay(token, {
-                onSuccess: function(result) {
-                    showModal("Pembayaran Berhasil", "Data perusahaan akan disimpan...");
-
-                    // Ambil data dari form
-                    let formData = new FormData(document.getElementById('payment-form'));
-                    formData.append('order_id', result.order_id); // Optional: kirim order_id dari Midtrans
-
-                    fetch('/insertcompany', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        },
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(response => {
-                        console.log(response);
-                        showModal("Pembayaran Berhasil", "Data Perusahaan Berhasil Disimpan");
-                        localStorage.removeItem('snap_token'); // Bersihkan token
-                        // Optional: redirect atau reset form
-                        // window.location.href = '/thanks';
-
-                        fetch('/set-payment-success', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            },
-                            body: JSON.stringify({ order_id: result.order_id }) // bisa disesuaikan
-                        }).then(() => {
-                            setTimeout(() => {
-                                window.location.href = "{{ route('register.success') }}";
-                            }, 5000);
-                        });
-                    })
-                    .catch(error => {
-                        showModal("Sukses", "Pembayaran Sukses Namun Data Perusahaan Gagal Disimpan.");
-                        console.error(error);
-                    });
-                },
-                onPending: function(result) {
-                    showModal("Pembayaran Tertunda", "Pembayaran Anda sedang diproses. Harap tunggu.");
-                },
-                onError: function(result) {
-                    showModal("Kesalahan Pembayaran", "Terjadi kesalahan saat memproses pembayaran.");
-                    console.log(result);
-                    localStorage.removeItem('snap_token');
-                },
-                onClose: function() {
-                    showModal("Dibatalkan", "Anda menutup popup pembayaran sebelum menyelesaikannya.");
-                }
-            });
         }
 
-    </script>
-
-    <script>
         function showModal(title, message) {
             const modal = document.getElementById('status-modal');
             const titleEl = document.getElementById('modal-title');
@@ -422,12 +361,11 @@
             modal.classList.add('hidden');
         }
 
-        // Attach event listeners
+        // Event listeners
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('modal-close').addEventListener('click', closeModal);
             document.getElementById('modal-ok').addEventListener('click', closeModal);
         });
     </script>
-
 </body>
 </html>

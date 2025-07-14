@@ -8,14 +8,16 @@ abstract class Controller
 {
     public function globalCheck()
     {
-        if (!Auth::guard('staff')->check() && !Auth::guard('staffPerusahaan')->check() && !Auth::guard('karyawanPerusahaan')->check()) {
+        if (! Auth::guard('staff')->check() && ! Auth::guard('staffPerusahaan')->check() && ! Auth::guard('karyawanPerusahaan')->check()) {
             return redirect()->route('login');
         }
     }
 
     public function checkifLoginForStaff()
     {
-        if ($redirect = $this->globalCheck()) return $redirect;
+        if ($redirect = $this->globalCheck()) {
+            return $redirect;
+        }
 
         if (Auth::guard('staffPerusahaan')->check()) {
             return redirect()->route('dashboard.perusahaan');
@@ -30,7 +32,9 @@ abstract class Controller
 
     public function checkifLoginForCompany()
     {
-        if ($redirect = $this->globalCheck()) return $redirect;
+        if ($redirect = $this->globalCheck()) {
+            return $redirect;
+        }
 
         if (Auth::guard('staff')->check()) {
             return redirect()->route('dashboard.staff');
@@ -45,7 +49,9 @@ abstract class Controller
 
     public function checkifLoginForEmployee()
     {
-        if ($redirect = $this->globalCheck()) return $redirect;
+        if ($redirect = $this->globalCheck()) {
+            return $redirect;
+        }
 
         if (Auth::guard('staff')->check()) {
             return redirect()->route('dashboard.staff');

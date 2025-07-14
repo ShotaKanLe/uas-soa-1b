@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Informasi;
 use App\Models\Service;
-use Illuminate\Http\Request;
-use Midtrans\Snap;
-use Midtrans\Config;
 
 class HomeController extends Controller
 {
@@ -13,6 +11,8 @@ class HomeController extends Controller
     {
         $dataService = Service::all();
 
-        return view('home.app', ['services' => $dataService]);
+        $dataInformasi = Informasi::all();
+
+        return view('home.app', ['dataService' => $dataService, 'dataInformasi' => $dataInformasi]);
     }
 }

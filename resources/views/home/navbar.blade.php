@@ -8,7 +8,7 @@
                     <div class="h-8 w-8 rounded-md flex items-center justify-center mr-2">
                         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-full h-full object-cover">
                     </div>
-                    <span class="font-bold text-xl text-[#39AA80]">ComCarbon</span>
+                    <span class="font-bold text-xl text-[#39AA80]">CompCarbon</span>
                 </a>
             </div>
 

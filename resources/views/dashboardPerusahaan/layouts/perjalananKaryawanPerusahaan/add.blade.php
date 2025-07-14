@@ -77,15 +77,6 @@
                 <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
             @enderror
         </div>
-
-        <!-- Trip Duration -->
-        <div>
-            <label for="trip_duration" class="block text-sm font-medium text-gray-700 mb-1">Trip Duration (minutes) <span class="text-red-500">*</span></label>
-            <input min="1" type="number" id="trip_duration" name="trip_duration" value="{{ old('trip_duration') }}" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" placeholder="Duration of the trip (minutes)" />
-            @error('trip_duration')
-                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-            @enderror
-        </div>
     </form>
 
     @if (session('success'))

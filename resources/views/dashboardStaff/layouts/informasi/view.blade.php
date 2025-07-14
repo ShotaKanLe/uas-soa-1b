@@ -1,6 +1,6 @@
 @extends('dashboardStaff.layouts.app')
 
-@section('title', 'Services')
+@section('title', 'Infomations')
 
 @section('content')
 
@@ -20,7 +20,7 @@
         <h2 class="text-xl font-semibold text-gray-800">Informations</h2>
         <div class="flex flex-wrap gap-2">
             <a href="{{ route('informasi.add') }}">
-                <button class="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 border border-green-600">
+                <button class="flex items-center gap-2 px-4 py-2 bg-[#39AA80] text-white rounded-md hover:bg-[#2F7B63]border border-green-600">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -30,6 +30,15 @@
         </div>
     </div>
 
+    @if (session('success'))
+            <div class="mb-4 p-4 rounded-md border border-green-300 bg-green-50 text-green-800 shadow-sm flex items-start gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -37,7 +46,6 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Information Title</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Publisher</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tag</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                 </tr>
             </thead>
@@ -47,7 +55,6 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="row.no"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="row.judul_informasi"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="row.nama_staff"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="row.tag"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                             <div class="flex justify-center">
                                 <button 
@@ -80,7 +87,7 @@
         >
             <!-- Modal Header -->
             <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 class="text-xl font-bold text-gray-800">Service Detail</h3>
+                <h3 class="text-xl font-bold text-gray-800">Information Detail</h3>
                 <button 
                     @click="showModal = false; confirmDelete = false" 
                     class="text-gray-400 hover:text-gray-600 text-2xl font-bold focus:outline-none"
@@ -90,45 +97,39 @@
             </div>
 
             <!-- Modal Content -->
-            <div class="space-y-4 text-sm text-gray-700">
-                <div>
-                    <span class="block font-semibold text-gray-800">Information Title:</span>
-                    <span x-text="selectedRow.judul_informasi" class="block mt-1"></span>
+            <div class="space-y-6 text-sm text-gray-800">
+                <!-- Information Title -->
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <span class="font-medium w-36 text-gray-700">Title:</span>
+                    <span class="text-gray-800" x-text="selectedRow.judul_informasi"></span>
                 </div>
 
-                <div>
-                    <span class="block font-semibold text-gray-800">Publisher:</span>
-                    <span x-text="selectedRow.nama_staff" class="block mt-1"></span>
+                <!-- Publisher -->
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <span class="font-medium w-36 text-gray-700">Publisher:</span>
+                    <span class="text-gray-800" x-text="selectedRow.nama_staff"></span>
                 </div>
 
+                <!-- Content -->
                 <div>
-                    <span class="block font-semibold text-gray-800">Content:</span>
-                    <span x-text="selectedRow.isi_informasi" class="block mt-1 whitespace-pre-line"></span>
-                </div>
-
-                <div>
-                    <span class="block font-semibold text-gray-800">Tag:</span>
-                    <span x-text="selectedRow.tag" class="block mt-1"></span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <span class="block font-semibold text-gray-800">Created At:</span>
-                        <span x-text="selectedRow.created_at" class="block mt-1"></span>
-                    </div>
-                    <div>
-                        <span class="block font-semibold text-gray-800">Latest Update:</span>
-                        <span x-text="selectedRow.updated_at" class="block mt-1"></span>
+                    <div class="font-medium text-gray-700 mb-1">Content:</div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-md p-3 whitespace-pre-line text-gray-800 text-sm"
+                        x-text="selectedRow.isi_informasi">
                     </div>
                 </div>
 
+                <!-- Image -->
                 <template x-if="selectedRow.gambar_informasi">
                     <div>
-                        <span class="block font-semibold text-gray-800 mb-1">Image:</span>
-                        <img :src="'/informasi_images/' + selectedRow.gambar_informasi" class="w-40 h-40 object-cover rounded-lg border" alt="Image">
+                        <div class="font-medium text-gray-700 mb-1">Attached Image:</div>
+                        <img :src="'/informasi_images/' + selectedRow.gambar_informasi"
+                            alt="Informasi Image"
+                            class="w-48 h-48 object-cover rounded-lg border border-gray-300 shadow-sm">
                     </div>
                 </template>
+
             </div>
+
 
             <!-- Modal Actions -->
             <div class="flex justify-between items-center mt-6 pt-4 border-t">
