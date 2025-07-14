@@ -137,7 +137,7 @@
                 <div class="flex gap-2 items-center">
                     <!-- Confirm Prompt -->
                     <template x-if="confirmDelete">
-                        <form :action="'{{ url('/dashboard/perusahaan/perjalanan') }}/' + selectedRow.id" method="POST" class="flex items-center gap-2">
+                        <form :action="'{{ url('/dashboard/perusahaan/analisis') }}/' + selectedRow.id" method="POST" class="flex items-center gap-2">
                             @csrf
                             @method('DELETE')
 

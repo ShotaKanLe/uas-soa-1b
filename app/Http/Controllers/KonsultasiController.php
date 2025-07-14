@@ -72,6 +72,15 @@ class KonsultasiController extends Controller
         return redirect('dashboard/perusahaan/konsultasi/add')->with('success', 'Consultation Successfully Added');
     }
 
+    public function delete($id)
+    {
+        if ($redirect = $this->checkifLoginForCompany()) {
+            return $redirect;
+        }
+        HasilKonsultasi::destroy($id);
+        return redirect('dashboard/perusahaan/konsultasi')->with('success', 'Data Successfully Deleted');
+    }
+
     public function replyStaff(Request $request)
     {
         if ($redirect = $this->checkifLoginForStaff()) {

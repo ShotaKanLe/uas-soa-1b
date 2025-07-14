@@ -123,6 +123,17 @@ class AuthController extends Controller
 
             $code->status = 'USED';
             $code->save();
+        } elseif ($code->code_type == 'PERUSAHAAN') {
+            $staffPerusahaan             = new StaffPerusahaan;
+            $staffPerusahaan->nama_staff = $validated['name'];
+            $staffPerusahaan->email      = $validated['email'];
+            $staffPerusahaan->password   = Hash::make($validated['password']);
+            $staffPerusahaan->id_code    = $idCode;
+            $staffPerusahaan->id_perusahaan = 1;
+            $staffPerusahaan->save();
+
+            $code->status = 'USED';
+            $code->save();
         } elseif ($code->code_type == 'EMPLOYEE') {
             return redirect()->route('employee.register', ['data' => $validated]);
         }

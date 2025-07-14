@@ -30,7 +30,55 @@ class PaymentController extends Controller
 
         $dataService = Service::all();
 
-        return view('home.services.success');
+        $code = $this->generateCodePerusahaan();
+
+        $codeEmp = $this->generateCodeEmployee();
+
+        return view('home.services.success', ['services' => $dataService, 'code' => $code]);
+    }
+
+    public function generateCodePerusahaan()
+    {
+        $codeStr = 'PERUSAHAAN-' . strtoupper(Str::random(6));
+
+        // Cek apakah kode sudah pernah dibuat
+        $checkDuplicate = Code::where('code', $codeStr)->first();
+
+        // Jika sudah ada, panggil ulang dan return hasilnya
+        if ($checkDuplicate) {
+            return $this->generateCodePerusahaan();
+        }
+
+        // Simpan ke database
+        $code = Code::create([
+            'code' => $codeStr,
+            'code_type' => 'PERUSAHAAN',
+            'status' => 'UNUSED',
+        ]);
+
+        return $codeStr;
+    }
+
+    public function generateCodeEmployee()
+    {
+        $codeStr = 'EMPLOYEE-' . strtoupper(Str::random(6));
+
+        // Cek apakah kode sudah pernah dibuat
+        $checkDuplicate = Code::where('code', $codeStr)->first();
+
+        // Jika sudah ada, panggil ulang dan return hasilnya
+        if ($checkDuplicate) {
+            return $this->generateCodeEmployee();
+        }
+
+        // Simpan ke database
+        $code = Code::create([
+            'code' => $codeStr,
+            'code_type' => 'EMPLOYEE',
+            'status' => 'UNUSED',
+        ]);
+
+        return $codeStr;
     }
 
     public function getSnapToken(Request $request)

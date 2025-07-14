@@ -90,8 +90,8 @@ class AnalisisEmisiKarbonController extends Controller
         if ($redirect = $this->checkifLoginForCompany()) {
             return $redirect;
         }
-        // PerjalananKaryawanPerusahaan::destroy($id);
-        // return redirect('dashboard/perusahaan/perjalanan')->with('success', 'Data Successfully Deleted');
+        HasilAnalisisEmisi::destroy($id);
+        return redirect('dashboard/perusahaan/analisis')->with('success', 'Data Successfully Deleted');
     }
 
     public function destroy($id)

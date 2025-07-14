@@ -31,6 +31,15 @@
         </div>
     </div>
 
+    @if (session('success'))
+            <div class="mb-4 p-4 rounded-md border border-green-300 bg-green-50 text-green-800 shadow-sm flex items-start gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -39,7 +48,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company Name</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service Name</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service Active Date</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+                    {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th> --}}
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                 </tr>
             </thead>
@@ -50,7 +59,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="row.nama_perusahaan"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="row.nama_service"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="row.tgl_aktif"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="row.alamat"></td>
+                        {{-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="row.alamat"></td> --}}
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                             <div class="flex justify-center">
                                 <button 
@@ -93,7 +102,7 @@
                 <p><span class="font-semibold">Company:</span> <span x-text="selectedRow.nama_perusahaan"></span></p>
                 <p><span class="font-semibold">Service:</span> <span x-text="selectedRow.nama_service"></span></p>
                 <p><span class="font-semibold">Active Date:</span> <span x-text="selectedRow.tgl_aktif"></span></p>
-                <p><span class="font-semibold">Address:</span> <span x-text="selectedRow.alamat"></span></p>
+                {{-- <p><span class="font-semibold">Address:</span> <span x-text="selectedRow.alamat"></span></p> --}}
             </div>
 
             <!-- Modal Actions -->

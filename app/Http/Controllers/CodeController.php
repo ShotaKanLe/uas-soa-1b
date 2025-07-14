@@ -10,7 +10,7 @@ class CodeController extends Controller
 {
     public function generateCode(Request $request)
     {
-        $codeStr = 'STAFF-'.strtoupper(Str::random(6));
+        $codeStr = 'STAFF-' . strtoupper(Str::random(6));
 
         // Cek apakah kode sudah pernah dibuat
         $checkDuplicate = Code::where('code', $codeStr)->first();

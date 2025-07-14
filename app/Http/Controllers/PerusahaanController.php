@@ -54,14 +54,12 @@ class PerusahaanController extends Controller
             'company_name' => 'required',
             'service_name' => 'required',
             'active_date' => 'required',
-            'address' => 'required',
         ]);
 
         Perusahaan::where('id', $id)->update([
             'nama_perusahaan' => $request->company_name,
             'id_service' => $request->service_name,
             'tanggal_aktif_service' => $request->active_date,
-            'alamat' => $request->address,
         ]);
 
         return redirect('dashboard/staff/perusahaan/edit/' . $id . '')->with('success', 'Data Successfully Updated');
