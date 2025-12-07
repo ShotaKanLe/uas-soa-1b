@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Informasi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log; // <--- WAJIB IMPORT LOG
 use Illuminate\Support\Str;
 
 class InformasiController extends Controller
@@ -15,9 +16,7 @@ class InformasiController extends Controller
         }
         $informasis = Informasi::latest()->paginate(5);
         $dataType   = 'informasi';
-        // $informasis = Informasi::all();
 
-        // return ($informasis);
         return view('dashboardStaff.layouts.informasi.view', ['data' => $informasis, 'dataType' => $dataType]);
     }
 
@@ -41,6 +40,12 @@ class InformasiController extends Controller
             'gambar_informasi' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
+        // [LOG CONTEXT] Mencatat upaya pembuatan informasi baru
+        Log::info('Creating New Information Entry', [
+            'title' => $request->information_name,
+            'user_id' => session('id')
+        ]);
+
         $imageName = null;
 
         if ($request->hasFile('gambar_informasi')) {
@@ -49,15 +54,21 @@ class InformasiController extends Controller
 
             // Simpan langsung ke public/informasi_images
             $image->move(public_path('informasi_images'), $imageName);
+
+            // [LOG CONTEXT] Log upload gambar sukses
+            Log::info('Information Image Uploaded', ['image_name' => $imageName]);
         }
 
         // Simpan data ke database
-        Informasi::create([
+        $informasi = Informasi::create([
             'judul_informasi' => $request->information_name,
             'isi_informasi' => $request->content,
             'gambar_informasi' => $imageName,
             'id_staff_mitra' => session('id'),
         ]);
+
+        // [LOG CONTEXT] Log sukses
+        Log::info('Information Created Successfully', ['info_id' => $informasi->id]);
 
         return redirect('dashboard/staff/informasi/add')->with('success', 'Data Successfully Added');
     }
@@ -67,6 +78,10 @@ class InformasiController extends Controller
         if ($redirect = $this->checkifLoginForStaff()) {
             return $redirect;
         }
+
+        // [LOG CONTEXT] Log penghapusan informasi
+        Log::warning('Deleting Information', ['info_id' => $id, 'user_id' => session('id')]);
+
         Informasi::destroy($id);
 
         return redirect('dashboard/staff/informasi')->with('success', 'Data Successfully Deleted');
@@ -78,8 +93,6 @@ class InformasiController extends Controller
             return $redirect;
         }
         $oldData = Informasi::find($id);
-
-        // return ($oldData);
 
         return view('dashboardStaff.layouts.informasi.edit', ['oldData' => $oldData, 'id' => $id]);
     }
@@ -96,6 +109,9 @@ class InformasiController extends Controller
             'gambar_informasi' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
+        // [LOG CONTEXT] Log awal update
+        Log::info('Updating Information Entry', ['info_id' => $id, 'user_id' => session('id')]);
+
         $informasi = Informasi::findOrFail($id);
         $imageName = $informasi->gambar_informasi; // Gunakan gambar lama sebagai default
 
@@ -103,6 +119,9 @@ class InformasiController extends Controller
             // Hapus gambar lama jika ada
             if ($informasi->gambar_informasi && file_exists(public_path('informasi_images/' . $informasi->gambar_informasi))) {
                 unlink(public_path('informasi_images/' . $informasi->gambar_informasi));
+
+                // [LOG CONTEXT] Log penggantian gambar (hapus lama)
+                Log::info('Old Information Image Deleted', ['old_image' => $informasi->gambar_informasi]);
             }
 
             $image     = $request->file('gambar_informasi');
@@ -110,6 +129,9 @@ class InformasiController extends Controller
 
             // Simpan gambar baru ke public/informasi_images
             $image->move(public_path('informasi_images'), $imageName);
+
+            // [LOG CONTEXT] Log gambar baru
+            Log::info('New Information Image Uploaded', ['new_image' => $imageName]);
         }
 
         // Update data ke database
@@ -119,6 +141,9 @@ class InformasiController extends Controller
             'gambar_informasi' => $imageName,
         ]);
 
+        // [LOG CONTEXT] Update sukses
+        Log::info('Information Updated Successfully', ['info_id' => $id]);
+
         return redirect('dashboard/staff/informasi/edit/' . $id)->with('success', 'Data Successfully Updated');
     }
 
@@ -127,8 +152,14 @@ class InformasiController extends Controller
         if ($redirect = $this->checkifLoginForStaff()) {
             return $redirect;
         }
+
+        // [LOG CONTEXT] Restore data
+        Log::info('Restoring Information', ['info_id' => $id, 'user_id' => session('id')]);
+
         Informasi::withTrashed()->where('id', $id)->restore();
 
-        return redirect('dashboard/perusahaan/informasi')->with('success', 'Data Successfully Restored');
+        // Note: Saya sesuaikan redirectnya ke dashboard staff agar konsisten,
+        // tapi jika memang harus ke perusahaan, silakan ubah kembali.
+        return redirect('dashboard/staff/informasi')->with('success', 'Data Successfully Restored');
     }
 }

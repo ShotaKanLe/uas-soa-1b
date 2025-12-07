@@ -1,4 +1,3 @@
-<!-- Hero Section -->
 <section class="relative bg-gradient-to-br from-[#39AA80] to-[#2C8A68] text-white overflow-hidden">
     <div class="absolute inset-0 opacity-10">
         <div class="absolute inset-0 bg-repeat opacity-5"></div>
@@ -44,7 +43,6 @@
     </div>
 </section>
 
-<!-- Services Section -->
 <section class="py-20 bg-white relative z-10 -mt-32" id="services">
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
@@ -60,19 +58,19 @@
                     $features = json_decode($service->deskripsi_service, true) ?? [];
                     $isRecommended = $index === 1; // Make the second service recommended
                 @endphp
-                
+
                 <div class="border {{ $isRecommended ? 'border-2 border-[#39AA80]' : 'border-gray-200' }} rounded-xl p-8 shadow-sm hover:shadow-lg transition relative flex flex-col h-full">
                     @if($isRecommended)
                         <span class="absolute top-0 right-0 bg-[#39AA80] text-white text-xs px-3 py-1 rounded-bl-lg font-semibold">Recommended</span>
                     @endif
-                    
+
                     <h3 class="text-xl font-bold mb-2 text-[#39AA80]">{{ $service->nama_service }}</h3>
                     <p class="text-gray-600 mb-4">Duration: {{ $service->durasi_service }} minutes</p>
                     <div class="text-3xl font-bold text-[#39AA80] mb-6">
                         Rp {{ number_format($service->harga_service, 0, ',', '.') }}
                         <span class="text-base font-normal text-gray-500">/ service</span>
                     </div>
-                    
+
                     <ul class="space-y-3 text-gray-700 mb-6">
                         @foreach($features as $feature)
                             <li class="flex items-center">
@@ -81,7 +79,7 @@
                             </li>
                         @endforeach
                     </ul>
-                    
+
                     <a href="/register/service/" class="mt-auto block text-center bg-[#39AA80] text-white px-6 py-3 rounded-md hover:bg-[#2C8A68] transition font-medium">
                         Choose {{ $service->nama_service }}
                     </a>
@@ -95,7 +93,6 @@
     </div>
 </section>
 
-<!-- Information Section -->
 <section class="py-20 bg-gray-50" id="about">
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
@@ -109,10 +106,11 @@
             @forelse($dataInformasi as $info)
                 <div class="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
                     <div class="relative h-48 overflow-hidden">
-                        <img src="{{ asset('images/' . $info->gambar_informasi) }}" 
-                             alt="{{ $info->judul_informasi }}" 
+                        {{-- PERBAIKAN DI SINI: MENAMBAHKAN this.onerror=null --}}
+                        <img src="{{ asset('images/' . $info->gambar_informasi) }}"
+                             alt="{{ $info->judul_informasi }}"
                              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                             onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
+                             onerror="this.onerror=null; this.src='{{ asset('images/placeholder.jpg') }}'">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#39AA80]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                     <div class="p-6">
@@ -142,7 +140,6 @@
     </div>
 </section>
 
-<!-- CTA Section -->
 <section class="py-20 bg-[#39AA80]" id="contact">
     <div class="container mx-auto px-4 text-center">
         <h2 class="text-3xl md:text-4xl font-bold mb-6 text-white">Ready to Get Started?</h2>

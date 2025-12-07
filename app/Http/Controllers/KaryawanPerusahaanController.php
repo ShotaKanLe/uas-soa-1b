@@ -9,6 +9,7 @@ use App\Models\PerjalananKaryawanPerusahaan;
 use App\Models\Transportasi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log; // <--- WAJIB IMPORT LOG
 
 class KaryawanPerusahaanController extends Controller
 {
@@ -17,11 +18,16 @@ class KaryawanPerusahaanController extends Controller
         if ($redirect = $this->checkifLoginForCompany()) {
             return $redirect;
         }
+
+        // [LOG CONTEXT] Mencatat akses daftar karyawan oleh perusahaan
+        Log::info('Viewing Company Employee List', [
+            'user_id' => session('id'),
+            'role' => 'perusahaan'
+        ]);
+
         $karyawans = KaryawanPerusahaan::latest()->paginate(5);
         $dataType  = 'karyawan';
-        // $karyawans = PerjalananKaryawanPerusahaan::all();
 
-        // return ($karyawans);
         return view('dashboardPerusahaan.layouts.karyawan.view', ['data' => $karyawans, 'dataType' => $dataType]);
     }
 
@@ -30,6 +36,12 @@ class KaryawanPerusahaanController extends Controller
         if ($redirect = $this->checkifLoginForEmployee()) {
             return $redirect;
         }
+
+        // [LOG CONTEXT] Mencatat aktivitas dashboard karyawan & filter yang digunakan
+        Log::info('Employee Dashboard Access', [
+            'user_id' => session('id'),
+            'filters_applied' => $request->only(['nama_karyawan', 'nama_bahan_bakar', 'nama_transportasi', 'tanggal_perjalanan'])
+        ]);
 
         $query = PerjalananKaryawanPerusahaan::query();
 
@@ -88,6 +100,13 @@ class KaryawanPerusahaanController extends Controller
         if ($redirect = $this->checkifLoginForCompany()) {
             return $redirect;
         }
+
+        // [LOG CONTEXT] Log penghapusan data karyawan
+        Log::warning('Deleting Employee Record', [
+            'employee_id' => $id,
+            'performed_by' => session('id')
+        ]);
+
         KaryawanPerusahaan::destroy($id);
 
         return redirect('dashboard/perusahaan/karyawan')->with('success', 'Data Successfully Deleted');
@@ -99,8 +118,6 @@ class KaryawanPerusahaanController extends Controller
             return $redirect;
         }
         $oldData = KaryawanPerusahaan::find($id);
-
-        // return ($oldData);
 
         return view('dashboardPerusahaan.layouts.karyawan.edit', ['oldData' => $oldData, 'id' => $id]);
     }
@@ -116,6 +133,13 @@ class KaryawanPerusahaanController extends Controller
             'email' => 'required',
             'gender' => 'required',
             'birth_date' => 'required',
+        ]);
+
+        // [LOG CONTEXT] Log update data profil karyawan
+        Log::info('Updating Employee Profile', [
+            'employee_id' => $id,
+            'updated_by' => session('id'),
+            'new_position' => $request->position // Contoh log perubahan jabatan
         ]);
 
         KaryawanPerusahaan::where('id', $id)->update([
@@ -134,6 +158,13 @@ class KaryawanPerusahaanController extends Controller
         if ($redirect = $this->checkifLoginForCompany()) {
             return $redirect;
         }
+
+        // [LOG CONTEXT] Log restore data karyawan
+        Log::info('Restoring Employee Record', [
+            'employee_id' => $id,
+            'performed_by' => session('id')
+        ]);
+
         KaryawanPerusahaan::withTrashed()->where('id', $id)->restore();
 
         return redirect('dashboard/perusahaan/service')->with('success', 'Data Successfully Restored');

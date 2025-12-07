@@ -8,6 +8,7 @@ use App\Models\Pesan;
 use App\Models\StaffPerusahaan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log; // <--- WAJIB IMPORT LOG
 
 class KonsultasiController extends Controller
 {
@@ -16,6 +17,13 @@ class KonsultasiController extends Controller
         if ($redirect = $this->checkifLoginForCompany()) {
             return $redirect;
         }
+
+        // [LOG CONTEXT] Log akses daftar konsultasi oleh perusahaan
+        Log::info('Viewing Consultation List (Company)', [
+            'user_id' => session('id'),
+            'role' => 'perusahaan'
+        ]);
+
         $konsultasis = HasilKonsultasi::latest()->paginate(5);
         $dataType    = 'konsultasi';
 
@@ -27,6 +35,12 @@ class KonsultasiController extends Controller
         if ($redirect = $this->checkifLoginForStaff()) {
             return $redirect;
         }
+
+        // [LOG CONTEXT] Log akses daftar konsultasi oleh staff
+        Log::info('Viewing Consultation Queue (Staff)', [
+            'user_id' => session('id'),
+            'role' => 'staff_mitra'
+        ]);
 
         $konsultasis = HasilKonsultasi::latest()->paginate(5);
         $dataType    = 'konsultasi';
@@ -51,15 +65,14 @@ class KonsultasiController extends Controller
             return $redirect;
         }
 
-        // dd($request->all());
-
         $companyId = StaffPerusahaan::where('id', session()->get('id'))->first()->id_perusahaan;
 
-        // $validatedData = $request->validate([
-        //     'selected_id' => 'required',
-        //     'disccussion_name' => 'required',
-        //     'discussion_message' => 'required',
-        // ]);
+        // [LOG CONTEXT] Mencatat permintaan konsultasi baru
+        Log::info('New Consultation Request Submitted', [
+            'company_id' => $companyId,
+            'topic' => $request->discussion_name,
+            'related_analysis_id' => $request->selected_id
+        ]);
 
         HasilKonsultasi::create([
             'id_perusahaan' => $companyId,
@@ -77,6 +90,13 @@ class KonsultasiController extends Controller
         if ($redirect = $this->checkifLoginForCompany()) {
             return $redirect;
         }
+
+        // [LOG CONTEXT] Log penghapusan tiket konsultasi
+        Log::warning('Deleting Consultation Ticket', [
+            'consultation_id' => $id,
+            'user_id' => session('id')
+        ]);
+
         HasilKonsultasi::destroy($id);
         return redirect('dashboard/perusahaan/konsultasi')->with('success', 'Data Successfully Deleted');
     }
@@ -88,21 +108,27 @@ class KonsultasiController extends Controller
         }
 
         $id = session('id');
-
         $fileName = null;
+
+        // [LOG CONTEXT] Log staff mulai membalas
+        Log::info('Staff Replying to Consultation', [
+            'staff_id' => $id,
+            'consultation_id' => $request->consultation_id
+        ]);
 
         // Cek apakah ada file yang dikirim
         if ($request->hasFile('file')) {
             $file = $request->file('file');
 
-            // Validasi opsional (bisa kamu sesuaikan)
             $request->validate([
                 'file' => 'mimes:pdf,docx,jpg,jpeg,png|max:5120', // max 5MB
             ]);
 
-            // Simpan file dengan nama acak
             $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('messages'), $fileName);
+
+            // [LOG CONTEXT] Log attachment file
+            Log::info('Consultation Reply Attachment Uploaded', ['file_name' => $fileName]);
         }
 
         // Simpan data ke database
@@ -115,6 +141,12 @@ class KonsultasiController extends Controller
         ]);
 
         HasilKonsultasi::where('id', $request->consultation_id)->update(['status_konsultasi' => 'CLOSED']);
+
+        // [LOG CONTEXT] Log penutupan tiket konsultasi
+        Log::info('Consultation Ticket Closed', [
+            'consultation_id' => $request->consultation_id,
+            'status' => 'CLOSED'
+        ]);
 
         return redirect('dashboard/staff/konsultasi/')->with('success', 'Consultation Reply Successfully Added');
     }

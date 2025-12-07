@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Perusahaan;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log; // <--- WAJIB IMPORT LOG
 
 class PerusahaanController extends Controller
 {
@@ -13,11 +14,16 @@ class PerusahaanController extends Controller
         if ($redirect = $this->checkifLoginForStaff()) {
             return $redirect;
         }
+
+        // [LOG CONTEXT] Mencatat Staff melihat daftar perusahaan (Monitoring)
+        Log::info('Viewing Registered Companies List', [
+            'user_id' => session('id'),
+            'role' => 'staff_mitra'
+        ]);
+
         $perusahaans = Perusahaan::latest()->paginate(5);
         $dataType    = 'perusahaan';
-        // $perjalanans = PerjalananKaryawanPerusahaan::all();
 
-        // return ($perjalanans);
         return view('dashboardStaff.layouts.perusahaan.view', ['data' => $perusahaans, 'dataType' => $dataType]);
     }
 
@@ -26,6 +32,13 @@ class PerusahaanController extends Controller
         if ($redirect = $this->checkifLoginForStaff()) {
             return $redirect;
         }
+
+        // [LOG CONTEXT] Log penghapusan data perusahaan (Action Berisiko)
+        Log::warning('Deleting Company Data', [
+            'company_id' => $id,
+            'performed_by_staff_id' => session('id')
+        ]);
+
         Perusahaan::destroy($id);
 
         return redirect('dashboard/staff/perusahaan')->with('success', 'Data Successfully Deleted');
@@ -40,8 +53,6 @@ class PerusahaanController extends Controller
 
         $oldData = Perusahaan::find($id);
 
-        // return ($oldData);
-
         return view('dashboardStaff.layouts.perusahaan.edit', ['dataService' => $services, 'oldData' => $oldData, 'id' => $id]);
     }
 
@@ -54,6 +65,13 @@ class PerusahaanController extends Controller
             'company_name' => 'required',
             'service_name' => 'required',
             'active_date' => 'required',
+        ]);
+
+        // [LOG CONTEXT] Log update data perusahaan (Misal: Perpanjang layanan atau ganti nama)
+        Log::info('Updating Company Subscription/Profile', [
+            'company_id' => $id,
+            'staff_id' => session('id'),
+            'updated_fields' => $request->only(['company_name', 'service_name', 'active_date'])
         ]);
 
         Perusahaan::where('id', $id)->update([

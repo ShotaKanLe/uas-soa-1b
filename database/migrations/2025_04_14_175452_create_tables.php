@@ -185,7 +185,7 @@ return new class extends Migration
             $table->text('nama_konsultasi');
             $table->date('tanggal_konsultasi');
             $table->text('isi_konsultasi');
-            $table->text('status_konsultasi')->default('OPEN');
+            $table->string('status_konsultasi')->default('OPEN');
             $table->foreignId('id_hasil_analisis')->constrained('hasil_analisis_emisis');
             $table->timestamps();
             $table->softDeletes();
