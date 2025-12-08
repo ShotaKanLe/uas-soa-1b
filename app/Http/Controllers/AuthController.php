@@ -94,7 +94,7 @@ class AuthController extends Controller
         }
 
         // 2. ERROR HANDLING (Duplikasi Akun)
-        if ($this->checkDuplicateAcc($validated['email'])) {
+        $checkDuplicateAcc = StaffMitra::withTrashed()->where('email')->first(); {
             Log::warning('Register Failed: Duplicate Email', ['email' => $validated['email']]);
             return redirect()->back()->withErrors(['email' => 'Email already exists']);
         }
