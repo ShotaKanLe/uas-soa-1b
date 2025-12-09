@@ -9,7 +9,7 @@ use App\Models\StaffPerusahaan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log; // Logging
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -23,41 +23,72 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // 1. VALIDASI INPUT
+        // 1. Validasi Input
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        $email    = $request->email;
+        $email = $request->email;
         $password = $request->password;
         $remember = $request->has('remember');
 
-        // Log Percobaan Login
         Log::info('Login Attempt', ['email' => $email]);
 
-        // Coba login sebagai StaffMitra
+        // --- CEK LOGIN STAFF MITRA (PUNYA KAMU) ---
         $staffMitra = StaffMitra::where('email', $email)->first();
         if ($staffMitra && Hash::check($password, $staffMitra->password)) {
+            // Set Session
             session(['role' => 'staff']);
             session(['id' => $staffMitra->id]);
             session(['name' => $staffMitra->nama_staff]);
             session(['email' => $staffMitra->email]);
+
+            // Login Guard Staff
             Auth::guard('staff')->login($staffMitra, $remember);
 
-            // Log Login Berhasil
-            Log::info('Login Success', ['role' => 'staff', 'user_id' => $staffMitra->id]);
-
+            Log::info('Login Success', ['role' => 'staff_mitra', 'user_id' => $staffMitra->id]);
             return redirect()->route('dashboard.staff');
         }
 
-        // ... (Logika login role lain: StaffPerusahaan, Karyawan) ...
-        // (Kode sama seperti sebelumnya untuk role lain)
+        // --- CEK LOGIN STAFF PERUSAHAAN (INI YANG HILANG TADI) ---
+        $staffPerusahaan = StaffPerusahaan::where('email', $email)->first();
+        if ($staffPerusahaan && Hash::check($password, $staffPerusahaan->password)) {
+            // Set Session
+            session(['role' => 'perusahaan']);
+            session(['id' => $staffPerusahaan->id]);
+            session(['name' => $staffPerusahaan->nama_staff_perusahaan]);
+            session(['email' => $staffPerusahaan->email]);
 
-        // 2. ERROR HANDLING (Login Gagal)
+            // Login Guard Staff Perusahaan
+            Auth::guard('staffPerusahaan')->login($staffPerusahaan, $remember);
+
+            Log::info('Login Success', ['role' => 'staff_perusahaan', 'user_id' => $staffPerusahaan->id]);
+            return redirect()->route('dashboard.perusahaan');
+        }
+
+        // --- CEK LOGIN KARYAWAN PERUSAHAAN (INI JUGA HILANG TADI) ---
+        $karyawan = KaryawanPerusahaan::where('email', $email)->first();
+        if ($karyawan && Hash::check($password, $karyawan->password)) {
+            // Set Session
+            session(['role' => 'karyawan']);
+            session(['id' => $karyawan->id]);
+            session(['name' => $karyawan->nama_karyawan]);
+            session(['email' => $karyawan->email]);
+
+            // Login Guard Karyawan
+            Auth::guard('karyawanPerusahaan')->login($karyawan, $remember);
+
+            Log::info('Login Success', ['role' => 'karyawan', 'user_id' => $karyawan->id]);
+            return redirect()->route('dashboard.karyawan');
+        }
+
+        // Jika semua gagal
         Log::warning('Login Failed: Invalid Credentials', ['email' => $email]);
         return redirect()->back()->withErrors(['email' => 'Email atau password salah']);
     }
+
+    // ... (Sisa fungsi viewRegister, register, dll biarkan seperti update terakhir kamu)
 
     public function viewRegister()
     {
@@ -69,7 +100,6 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        // 1. VALIDASI INPUT
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -78,63 +108,69 @@ class AuthController extends Controller
             'code' => 'required|string',
         ]);
 
-        Log::info('Register Attempt', ['email' => $validated['email'], 'code' => $validated['code']]);
-
-        // 2. ERROR HANDLING (Kode Invalid / Terpakai)
+        // Cek Kode
         $code = Code::where('code', $validated['code'])->first();
 
         if (! $code) {
-            Log::warning('Register Failed: Invalid Code', ['code' => $validated['code']]);
             return redirect()->back()->withErrors(['code' => 'Invalid code']);
         }
 
         if ($code->status == 'USED') {
-            Log::warning('Register Failed: Code Used', ['code' => $validated['code']]);
             return redirect()->back()->withErrors(['code' => 'Code already used']);
         }
 
-        // 2. ERROR HANDLING (Duplikasi Akun)
-        $checkDuplicateAcc = StaffMitra::withTrashed()->where('email')->first(); {
-            Log::warning('Register Failed: Duplicate Email', ['email' => $validated['email']]);
-            return redirect()->back()->withErrors(['email' => 'Email already exists']);
+        // Cek Duplikasi Akun
+        if ($this->checkDuplicateAcc($validated['email'])) {
+             return redirect()->back()->withErrors(['email' => 'Email already exists']);
         }
 
-        // Proses Simpan Data
         $idCode = $code->id;
 
+        // Register Staff Mitra
         if ($code->code_type == 'STAFF') {
-            $staffMitra             = new StaffMitra;
+            $staffMitra = new StaffMitra;
             $staffMitra->nama_staff = $validated['name'];
-            $staffMitra->email      = $validated['email'];
-            $staffMitra->password   = Hash::make($validated['password']);
-            $staffMitra->id_code    = $idCode;
+            $staffMitra->email = $validated['email'];
+            $staffMitra->password = Hash::make($validated['password']);
+            $staffMitra->id_code = $idCode;
             $staffMitra->save();
 
             $code->status = 'USED';
             $code->save();
 
-            Log::info('Register Success: Staff Mitra Created', ['email' => $validated['email']]);
+            Log::info('Register Success: Staff Mitra', ['email' => $validated['email']]);
         }
-        // ... (Logika register role lain) ...
+        // Logic register role lain jika ada, tambahkan disini...
 
         return redirect()->route('register', ['success' => 'Account created successfully']);
     }
 
-    // ... (Method checkDuplicateAcc, checkDuplicateName, logout, checkifLogin tetap sama) ...
+    public function checkDuplicateAcc($email)
+    {
+        // Pengecekan dengan withTrashed (Solusi Soft Delete)
+        if (StaffMitra::withTrashed()->where('email', $email)->first()) return true;
+        if (StaffPerusahaan::where('email', $email)->first()) return true;
+        if (KaryawanPerusahaan::where('email', $email)->first()) return true;
+
+        return false;
+    }
+
     public function logout()
     {
-        $user = Auth::guard('staff')->user();
-        if ($user) Log::info('User Logged Out', ['email' => $user->email]);
+        session()->forget(['role', 'id', 'name', 'email']);
 
         Auth::guard('staff')->logout();
-        // ... logout guard lain ...
-        session()->forget(['role', 'id']);
+        Auth::guard('staffPerusahaan')->logout();
+        Auth::guard('karyawanPerusahaan')->logout();
 
         return redirect()->route('login');
     }
 
-    // ... method helper lainnya
-    public function checkDuplicateAcc($email) { /* ... */ return false; }
-    public function checkDuplicateName($name) { /* ... */ return false; }
-    public function checkifLogin() { /* ... */ return null; }
+    public function checkifLogin()
+    {
+        if (Auth::guard('staff')->check()) return redirect()->route('dashboard.staff');
+        if (Auth::guard('staffPerusahaan')->check()) return redirect()->route('dashboard.perusahaan');
+        if (Auth::guard('karyawanPerusahaan')->check()) return redirect()->route('dashboard.karyawan');
+        return null;
+    }
 }
