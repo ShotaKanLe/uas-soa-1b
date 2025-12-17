@@ -14,6 +14,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PerjalananKaryawanController;
 use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\NewsController;
 use App\Models\Service;
 use Illuminate\Support\Facades\Route;
 
@@ -101,6 +102,16 @@ Route::post('dashboard/staff/informasi', [InformasiController::class, 'store'])-
 Route::put('dashboard/staff/informasi/edit/{id}', [InformasiController::class, 'update'])->name('informasi.update');
 Route::delete('dashboard/staff/informasi/{id}', [InformasiController::class, 'delete'])->name('informasi.delete');
 Route::get('dashboard/staff/informasi/restore/{id}', [InformasiController::class, 'restore'])->name('informasi.restore');
+
+// News
+Route::get('dashboard/staff/news', [NewsController::class, 'index'])->name('news.index');
+Route::get('dashboard/staff/news/edit/{id}', [NewsController::class, 'edit'])->name('news.edit');
+Route::get('dashboard/staff/news/add', [NewsController::class, 'add'])->name('news.create');
+Route::post('dashboard/staff/news', [NewsController::class, 'store'])->name('news.store');
+Route::put('dashboard/staff/news/edit/{id}', [NewsController::class, 'update'])->name('news.update');
+Route::delete('dashboard/staff/news/{id}', [NewsController::class, 'delete'])->name('news.delete');
+Route::get('dashboard/staff/news/restore/{id}', [NewsController::class, 'restore'])->name('news.restore');
+Route::get('/staff/news/{id}', [NewsController::class, 'show'])->name('news.show');
 
 Route::get('dashboard/staff/konsultasi', [KonsultasiController::class, 'indexStaff'])->name('staff.konsultasi.index');
 Route::get('dashboard/staff/konsultasi/edit/{id}', [KonsultasiController::class, 'editStaff'])->name('staff.konsultasi.edit');
