@@ -2,10 +2,9 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
-use Tests\TestCase;
 use Database\Seeders\DatabaseSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class KaryawanPerusahaanTest extends TestCase
 {
@@ -21,7 +20,6 @@ class KaryawanPerusahaanTest extends TestCase
         $this->seed(DatabaseSeeder::class);
     }
 
-
     public function test_can_view_login_page()
     {
         $response = $this->get(route('login.view'));
@@ -29,7 +27,6 @@ class KaryawanPerusahaanTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('auth.login');
     }
-
 
     public function test_karyawan_can_login()
     {
@@ -44,7 +41,6 @@ class KaryawanPerusahaanTest extends TestCase
         $this->assertEquals('Andi Pratama', session('name'));
     }
 
-
     public function test_staff_perusahaan_can_login()
     {
 
@@ -57,7 +53,6 @@ class KaryawanPerusahaanTest extends TestCase
         $this->assertEquals('perusahaan', session('role'));
         $this->assertEquals('Budi Santoso', session('name'));
     }
-
 
     public function test_staff_mitra_can_login()
     {
@@ -72,7 +67,6 @@ class KaryawanPerusahaanTest extends TestCase
         $this->assertEquals('Dr. Ahmad Rizki', session('name'));
     }
 
-
     public function test_login_with_invalid_credentials()
     {
         $response = $this->post(route('login'), [
@@ -84,7 +78,6 @@ class KaryawanPerusahaanTest extends TestCase
         $response->assertSessionHasErrors('email');
     }
 
-
     public function test_can_view_register_page()
     {
         $response = $this->get(route('register.view'));
@@ -92,7 +85,6 @@ class KaryawanPerusahaanTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('auth.register');
     }
-
 
     public function test_register()
     {
@@ -108,7 +100,6 @@ class KaryawanPerusahaanTest extends TestCase
         $response->assertSessionHasErrors('email');
     }
 
-
     public function test_can_update_karyawan()
     {
 
@@ -116,7 +107,6 @@ class KaryawanPerusahaanTest extends TestCase
             'email' => 'staff@example.com',
             'password' => 'staff',
         ]);
-
 
         $response = $this->put(route('karyawan.update', 2), [
             'employee_name' => 'Dewi Lestari Updated',
@@ -137,7 +127,6 @@ class KaryawanPerusahaanTest extends TestCase
         ]);
     }
 
-
     public function test_can_delete_karyawan()
     {
 
@@ -146,18 +135,15 @@ class KaryawanPerusahaanTest extends TestCase
             'password' => 'staff',
         ]);
 
-
         $response = $this->delete(route('karyawan.delete', 2));
 
         $response->assertRedirect('dashboard/perusahaan/karyawan');
         $response->assertSessionHas('success', 'Data Successfully Deleted');
 
-
         $this->assertSoftDeleted('karyawan_perusahaans', [
             'id' => 2,
         ]);
     }
-
 
     public function test_karyawan_can_logout()
     {
@@ -167,9 +153,7 @@ class KaryawanPerusahaanTest extends TestCase
             'password' => 'karyawan',
         ]);
 
-
         $this->assertEquals('karyawan', session('role'));
-
 
         $response = $this->get(route('logout'));
 
@@ -177,7 +161,6 @@ class KaryawanPerusahaanTest extends TestCase
         $this->assertNull(session('role'));
         $this->assertNull(session('id'));
     }
-
 
     public function test_staff_perusahaan_can_logout()
     {
@@ -187,9 +170,7 @@ class KaryawanPerusahaanTest extends TestCase
             'password' => 'staff',
         ]);
 
-
         $this->assertEquals('perusahaan', session('role'));
-
 
         $response = $this->get(route('logout'));
 
@@ -198,7 +179,6 @@ class KaryawanPerusahaanTest extends TestCase
         $this->assertNull(session('id'));
     }
 
-
     public function test_can_view_edit_karyawan_page()
     {
 
@@ -206,7 +186,6 @@ class KaryawanPerusahaanTest extends TestCase
             'email' => 'staff@example.com',
             'password' => 'staff',
         ]);
-
 
         $response = $this->get(route('karyawan.edit', 1));
 
