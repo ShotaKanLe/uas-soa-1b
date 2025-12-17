@@ -62,6 +62,6 @@ class PerusahaanController extends Controller
             'tanggal_aktif_service' => $request->active_date,
         ]);
 
-        return redirect('dashboard/staff/perusahaan/edit/' . $id . '')->with('success', 'Data Successfully Updated');
+        return redirect('dashboard/staff/perusahaan/edit/'.$id.'')->with('success', 'Data Successfully Updated');
     }
 }

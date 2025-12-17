@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Informasi;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class InformasiController extends Controller
 {
@@ -22,13 +22,14 @@ class InformasiController extends Controller
 
             Log::info('Fetching informasi list', [
                 'correlation_id' => $correlationId,
-                'auth_token'     => $authToken,
-                'staff_id'       => session('id')
+                'auth_token' => $authToken,
+                'staff_id' => session('id'),
             ]);
 
             $informasis = Informasi::latest()->paginate(5);
         } catch (Exception $e) {
             Log::error('Error fetching informasi list', ['error' => $e->getMessage()]);
+
             return redirect()->back()->with('error', 'Failed to fetch data');
         }
 
@@ -53,7 +54,7 @@ class InformasiController extends Controller
         Log::info('Storing informasi', [
             'staff_id' => session('id'),
             'correlation_id' => session('correlation_id'),
-            'auth_token' => session('auth_token')
+            'auth_token' => session('auth_token'),
         ]);
 
         $validatedData = $request->validate([
@@ -67,7 +68,7 @@ class InformasiController extends Controller
 
             if ($request->hasFile('gambar_informasi')) {
                 $image     = $request->file('gambar_informasi');
-                $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
+                $imageName = Str::uuid().'.'.$image->getClientOriginalExtension();
                 $image->move(public_path('informasi_images'), $imageName);
             }
 
@@ -79,6 +80,7 @@ class InformasiController extends Controller
             ]);
         } catch (Exception $e) {
             Log::error('Error storing informasi', ['error' => $e->getMessage()]);
+
             return redirect()->back()->with('error', 'Failed to save data');
         }
 
@@ -94,13 +96,14 @@ class InformasiController extends Controller
         Log::info('Deleting informasi', [
             'staff_id' => session('id'),
             'correlation_id' => session('correlation_id'),
-            'auth_token' => session('auth_token')
+            'auth_token' => session('auth_token'),
         ]);
 
         try {
             Informasi::destroy($id);
         } catch (Exception $e) {
             Log::error('Error deleting informasi', ['error' => $e->getMessage()]);
+
             return redirect()->back()->with('error', 'Failed to delete data');
         }
 
@@ -117,6 +120,7 @@ class InformasiController extends Controller
             $oldData = Informasi::find($id);
         } catch (Exception $e) {
             Log::error('Error fetching edit data', ['error' => $e->getMessage()]);
+
             return redirect()->back()->with('error', 'Failed to fetch edit data');
         }
 
@@ -132,7 +136,7 @@ class InformasiController extends Controller
         Log::info('Updating informasi', [
             'staff_id' => session('id'),
             'correlation_id' => session('correlation_id'),
-            'auth_token' => session('auth_token')
+            'auth_token' => session('auth_token'),
         ]);
 
         $validatedData = $request->validate([
@@ -146,12 +150,12 @@ class InformasiController extends Controller
             $imageName = $informasi->gambar_informasi;
 
             if ($request->hasFile('gambar_informasi')) {
-                if ($informasi->gambar_informasi && file_exists(public_path('informasi_images/' . $informasi->gambar_informasi))) {
-                    unlink(public_path('informasi_images/' . $informasi->gambar_informasi));
+                if ($informasi->gambar_informasi && file_exists(public_path('informasi_images/'.$informasi->gambar_informasi))) {
+                    unlink(public_path('informasi_images/'.$informasi->gambar_informasi));
                 }
 
                 $image     = $request->file('gambar_informasi');
-                $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
+                $imageName = Str::uuid().'.'.$image->getClientOriginalExtension();
                 $image->move(public_path('informasi_images'), $imageName);
             }
 
@@ -162,10 +166,11 @@ class InformasiController extends Controller
             ]);
         } catch (Exception $e) {
             Log::error('Error updating informasi', ['error' => $e->getMessage()]);
+
             return redirect()->back()->with('error', 'Failed to update data');
         }
 
-        return redirect('dashboard/staff/informasi/edit/' . $id)->with('success', 'Data Successfully Updated');
+        return redirect('dashboard/staff/informasi/edit/'.$id)->with('success', 'Data Successfully Updated');
     }
 
     public function restore(string $id)
@@ -178,6 +183,7 @@ class InformasiController extends Controller
             Informasi::withTrashed()->where('id', $id)->restore();
         } catch (Exception $e) {
             Log::error('Error restoring informasi', ['error' => $e->getMessage()]);
+
             return redirect()->back()->with('error', 'Failed to restore data');
         }
 

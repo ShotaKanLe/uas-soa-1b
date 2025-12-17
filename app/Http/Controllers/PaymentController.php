@@ -39,7 +39,7 @@ class PaymentController extends Controller
 
     public function generateCodePerusahaan()
     {
-        $codeStr = 'PERUSAHAAN-' . strtoupper(Str::random(6));
+        $codeStr = 'PERUSAHAAN-'.strtoupper(Str::random(6));
 
         // Cek apakah kode sudah pernah dibuat
         $checkDuplicate = Code::where('code', $codeStr)->first();
@@ -61,7 +61,7 @@ class PaymentController extends Controller
 
     public function generateCodeEmployee()
     {
-        $codeStr = 'EMPLOYEE-' . strtoupper(Str::random(6));
+        $codeStr = 'EMPLOYEE-'.strtoupper(Str::random(6));
 
         // Cek apakah kode sudah pernah dibuat
         $checkDuplicate = Code::where('code', $codeStr)->first();
@@ -135,7 +135,7 @@ class PaymentController extends Controller
 
     public function generateCodeCompany()
     {
-        $codeStr = 'COMP-' . strtoupper(Str::random(6));
+        $codeStr = 'COMP-'.strtoupper(Str::random(6));
 
         // Cek apakah kode sudah pernah dibuat
         $checkDuplicate = Code::where('code', $codeStr)->first();
