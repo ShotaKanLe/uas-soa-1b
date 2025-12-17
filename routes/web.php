@@ -10,11 +10,11 @@ use App\Http\Controllers\InformasiController;
 use App\Http\Controllers\KaryawanPerusahaanController;
 use App\Http\Controllers\KonsultasiController;
 use App\Http\Controllers\MapController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PerjalananKaryawanController;
 use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\NewsController;
 use App\Models\Service;
 use Illuminate\Support\Facades\Route;
 

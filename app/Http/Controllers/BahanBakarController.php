@@ -125,7 +125,7 @@ class BahanBakarController extends Controller
             'rerata_konsumsi_literperkm' => $request->rerata_konsumsi_literperkm,
         ]);
 
-        return redirect('dashboard/staff/bahanBakar/edit/' . $id . '')->with('success', 'Data Successfully Updated');
+        return redirect('dashboard/staff/bahanBakar/edit/'.$id.'')->with('success', 'Data Successfully Updated');
     }
 
     public function restore(string $id)

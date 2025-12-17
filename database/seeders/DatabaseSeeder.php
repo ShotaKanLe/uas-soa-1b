@@ -17,7 +17,6 @@ use App\Models\Service;
 use App\Models\StaffMitra;
 use App\Models\staffPerusahaan;
 use App\Models\Transportasi;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 

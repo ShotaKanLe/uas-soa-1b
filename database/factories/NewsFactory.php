@@ -9,12 +9,14 @@ class NewsFactory extends Factory
 {
     /**
      * Nama model yang sesuai dengan factory.
+     *
      * @var string
      */
     protected $model = News::class;
 
     /**
      * Tentukan status default model.
+     *
      * @return array<string, mixed>
      */
     public function definition(): array

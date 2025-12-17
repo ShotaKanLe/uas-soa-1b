@@ -36,21 +36,21 @@ class KaryawanPerusahaanController extends Controller
         // Filter nama_karyawan
         if ($request->filled('nama_karyawan')) {
             $query->whereHas('karyawanPerusahaan', function ($q) use ($request) {
-                $q->where('nama_karyawan', 'like', '%' . $request->nama_karyawan . '%');
+                $q->where('nama_karyawan', 'like', '%'.$request->nama_karyawan.'%');
             });
         }
 
         // Filter nama_bahan_bakar
         if ($request->filled('nama_bahan_bakar')) {
             $query->whereHas('bahanBakar', function ($q) use ($request) {
-                $q->where('nama_bahan_bakar', 'like', '%' . $request->nama_bahan_bakar . '%');
+                $q->where('nama_bahan_bakar', 'like', '%'.$request->nama_bahan_bakar.'%');
             });
         }
 
         // Filter nama_transportasi
         if ($request->filled('nama_transportasi')) {
             $query->whereHas('transportasi', function ($q) use ($request) {
-                $q->where('nama_transportasi', 'like', '%' . $request->nama_transportasi . '%');
+                $q->where('nama_transportasi', 'like', '%'.$request->nama_transportasi.'%');
             });
         }
 
@@ -79,7 +79,7 @@ class KaryawanPerusahaanController extends Controller
             'dataType' => 'perjalanan',
             'request' => $request,
             'dataAlamat' => $alamats,
-            'sudahAbsen' => $sudahAbsen
+            'sudahAbsen' => $sudahAbsen,
         ]);
     }
 
@@ -126,7 +126,7 @@ class KaryawanPerusahaanController extends Controller
             'tanggal_lahir' => $request->birth_date,
         ]);
 
-        return redirect('dashboard/perusahaan/karyawan/edit/' . $id . '')->with('success', 'Data Successfully Updated');
+        return redirect('dashboard/perusahaan/karyawan/edit/'.$id.'')->with('success', 'Data Successfully Updated');
     }
 
     public function restore(string $id)

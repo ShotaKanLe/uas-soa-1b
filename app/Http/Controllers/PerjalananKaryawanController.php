@@ -26,21 +26,21 @@ class PerjalananKaryawanController extends Controller
         // Filter nama_karyawan
         if ($request->filled('nama_karyawan')) {
             $query->whereHas('karyawanPerusahaan', function ($q) use ($request) {
-                $q->where('nama_karyawan', 'like', '%' . $request->nama_karyawan . '%');
+                $q->where('nama_karyawan', 'like', '%'.$request->nama_karyawan.'%');
             });
         }
 
         // Filter nama_bahan_bakar
         if ($request->filled('nama_bahan_bakar')) {
             $query->whereHas('bahanBakar', function ($q) use ($request) {
-                $q->where('nama_bahan_bakar', 'like', '%' . $request->nama_bahan_bakar . '%');
+                $q->where('nama_bahan_bakar', 'like', '%'.$request->nama_bahan_bakar.'%');
             });
         }
 
         // Filter nama_transportasi
         if ($request->filled('nama_transportasi')) {
             $query->whereHas('transportasi', function ($q) use ($request) {
-                $q->where('nama_transportasi', 'like', '%' . $request->nama_transportasi . '%');
+                $q->where('nama_transportasi', 'like', '%'.$request->nama_transportasi.'%');
             });
         }
 
@@ -84,11 +84,11 @@ class PerjalananKaryawanController extends Controller
 
         $emisiKarbonPermenit = BahanBakar::where('id', $request->bahan_bakar)->first()->emisi_karbon_permenit;
 
-        $co2 = BahanBakar::where('id', $request->bahan_bakar)->first()->co2perliter;
-        $ch4 = BahanBakar::where('id', $request->bahan_bakar)->first()->ch4perliter;
-        $n2O = BahanBakar::where('id', $request->bahan_bakar)->first()->n2Operliter;
-        $co2e = BahanBakar::where('id', $request->bahan_bakar)->first()->co2eperliter;
-        $WTT = BahanBakar::where('id', $request->bahan_bakar)->first()->WTTperliter;
+        $co2               = BahanBakar::where('id', $request->bahan_bakar)->first()->co2perliter;
+        $ch4               = BahanBakar::where('id', $request->bahan_bakar)->first()->ch4perliter;
+        $n2O               = BahanBakar::where('id', $request->bahan_bakar)->first()->n2Operliter;
+        $co2e              = BahanBakar::where('id', $request->bahan_bakar)->first()->co2eperliter;
+        $WTT               = BahanBakar::where('id', $request->bahan_bakar)->first()->WTTperliter;
         $consumpstion_rate = BahanBakar::where('id', $request->bahan_bakar)->first()->rerata_konsumsi_literperkm;
 
         $alamatRumah = AlamatRumah::find($request->alamat_rumah);
@@ -116,11 +116,11 @@ class PerjalananKaryawanController extends Controller
 
         $jarakPerjalanan = $this->hitungJarakPerjalanan($start, $end);
 
-        $totalco2 = $co2 * $jarakPerjalanan * $consumpstion_rate;
-        $totalch4 = $ch4 * $jarakPerjalanan * $consumpstion_rate;
-        $totaln2O = $n2O * $jarakPerjalanan * $consumpstion_rate;
+        $totalco2  = $co2 * $jarakPerjalanan * $consumpstion_rate;
+        $totalch4  = $ch4 * $jarakPerjalanan * $consumpstion_rate;
+        $totaln2O  = $n2O * $jarakPerjalanan * $consumpstion_rate;
         $totalco2e = $co2e * $jarakPerjalanan * $consumpstion_rate;
-        $totalWTT = $WTT * $jarakPerjalanan * $consumpstion_rate;
+        $totalWTT  = $WTT * $jarakPerjalanan * $consumpstion_rate;
 
         $emisiKarbon = $totalco2 + $totalch4 + $totaln2O + $totalco2e;
 
@@ -150,6 +150,7 @@ class PerjalananKaryawanController extends Controller
 
         if (! $apiKey) {
             Log::error('API key kosong!');
+
             return null;
         }
 
@@ -168,8 +169,9 @@ class PerjalananKaryawanController extends Controller
         if (! $response->successful()) {
             Log::error('ORS API gagal:', [
                 'status' => $response->status(),
-                'body' => $response->body()
+                'body' => $response->body(),
             ]);
+
             return null;
         }
 
@@ -177,7 +179,6 @@ class PerjalananKaryawanController extends Controller
 
         return round($data['routes'][0]['summary']['distance'] / 1000, 2);
     }
-
 
     public function indexKaryawan(Request $request)
     {
@@ -190,21 +191,21 @@ class PerjalananKaryawanController extends Controller
         // Filter nama_karyawan
         if ($request->filled('nama_karyawan')) {
             $query->whereHas('karyawanPerusahaan', function ($q) use ($request) {
-                $q->where('nama_karyawan', 'like', '%' . $request->nama_karyawan . '%');
+                $q->where('nama_karyawan', 'like', '%'.$request->nama_karyawan.'%');
             });
         }
 
         // Filter nama_bahan_bakar
         if ($request->filled('nama_bahan_bakar')) {
             $query->whereHas('bahanBakar', function ($q) use ($request) {
-                $q->where('nama_bahan_bakar', 'like', '%' . $request->nama_bahan_bakar . '%');
+                $q->where('nama_bahan_bakar', 'like', '%'.$request->nama_bahan_bakar.'%');
             });
         }
 
         // Filter nama_transportasi
         if ($request->filled('nama_transportasi')) {
             $query->whereHas('transportasi', function ($q) use ($request) {
-                $q->where('nama_transportasi', 'like', '%' . $request->nama_transportasi . '%');
+                $q->where('nama_transportasi', 'like', '%'.$request->nama_transportasi.'%');
             });
         }
 
@@ -348,6 +349,6 @@ class PerjalananKaryawanController extends Controller
             'total_emisi_karbon' => $bahanBakar->emisi_karbon_permenit * $request->trip_duration,
         ]);
 
-        return redirect('dashboard/perusahaan/perjalanan/edit/' . $id . '')->with('success', 'Data Successfully Updated');
+        return redirect('dashboard/perusahaan/perjalanan/edit/'.$id.'')->with('success', 'Data Successfully Updated');
     }
 }

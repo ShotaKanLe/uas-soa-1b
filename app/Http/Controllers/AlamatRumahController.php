@@ -142,7 +142,7 @@ class AlamatRumahController extends Controller
             ->where('id_karyawan', session('id'))
             ->first();
 
-        if (!$alamatRumah) {
+        if (! $alamatRumah) {
             return redirect('/dashboard/karyawan/alamat')->with('error', 'Address data not found');
         }
 
@@ -165,7 +165,7 @@ class AlamatRumahController extends Controller
             'alamat_rumah' => $request->address,
         ]);
 
-        return redirect('dashboard/perusahaan/alamat/edit/' . $id . '')->with('success', 'Data Successfully Updated');
+        return redirect('dashboard/perusahaan/alamat/edit/'.$id.'')->with('success', 'Data Successfully Updated');
     }
 
     public function updateAlamatKaryawan(Request $request, $id)
@@ -185,7 +185,7 @@ class AlamatRumahController extends Controller
             ->where('id_karyawan', session('id'))
             ->first();
 
-        if (!$alamatRumah) {
+        if (! $alamatRumah) {
             return redirect('/dashboard/karyawan/alamat')->with('error', 'Address data not found');
         }
 
@@ -218,12 +218,13 @@ class AlamatRumahController extends Controller
     {
         $apiKey = env('ORS_API_KEY');
 
-        if (!$apiKey) {
+        if (! $apiKey) {
             Log::error('API key kosong!');
+
             return 'Alamat tidak tersedia';
         }
 
-        if (!is_numeric($latitude) || !is_numeric($longitude)) {
+        if (! is_numeric($latitude) || ! is_numeric($longitude)) {
             return "Koordinat: {$latitude}, {$longitude}";
         }
 
@@ -243,7 +244,7 @@ class AlamatRumahController extends Controller
             'lang' => 'id',
         ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             return "Koordinat: {$latitude}, {$longitude}";
         }
 
@@ -259,34 +260,34 @@ class AlamatRumahController extends Controller
         $parts = [];
 
         // 1. Nama jalan atau tempat
-        if (!empty($properties['name'])) {
+        if (! empty($properties['name'])) {
             $parts[] = $properties['name'];
         }
 
         // 2. Kelurahan/Desa (neighbourhood atau locality)
         $kelurahan = $properties['neighbourhood'] ?? $properties['locality'] ?? null;
-        if ($kelurahan && !$this->isDuplicateLocation($kelurahan, $parts)) {
+        if ($kelurahan && ! $this->isDuplicateLocation($kelurahan, $parts)) {
             $parts[] = $kelurahan;
         }
 
         // 3. Kecamatan/kabupaten (county) - filter untuk Indonesia
-        if (!empty($properties['county'])) {
+        if (! empty($properties['county'])) {
             $county = $properties['county'];
 
             // Hapus prefix yang umum di Indonesia
             $county = $this->cleanIndonesianLocationName($county);
 
-            if (!$this->isDuplicateLocation($county, $parts)) {
+            if (! $this->isDuplicateLocation($county, $parts)) {
                 $parts[] = $county;
             }
         }
 
         // 4. Provinsi (region)
-        if (!empty($properties['region'])) {
+        if (! empty($properties['region'])) {
             $region = $properties['region'];
             $region = $this->cleanIndonesianLocationName($region);
 
-            if (!$this->isDuplicateLocation($region, $parts)) {
+            if (! $this->isDuplicateLocation($region, $parts)) {
                 $parts[] = $region;
             }
         }
@@ -333,11 +334,12 @@ class AlamatRumahController extends Controller
         return false;
 
         // Validasi input koordinat
-        if (!is_numeric($latitude) || !is_numeric($longitude)) {
+        if (! is_numeric($latitude) || ! is_numeric($longitude)) {
             Log::error('Koordinat tidak valid', [
                 'latitude' => $latitude,
-                'longitude' => $longitude
+                'longitude' => $longitude,
             ]);
+
             return null;
         }
 
@@ -345,8 +347,9 @@ class AlamatRumahController extends Controller
         if ($latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
             Log::error('Koordinat di luar jangkauan yang valid', [
                 'latitude' => $latitude,
-                'longitude' => $longitude
+                'longitude' => $longitude,
             ]);
+
             return null;
         }
 
@@ -362,12 +365,13 @@ class AlamatRumahController extends Controller
             'lang' => 'id', // Parameter bahasa Indonesia
         ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             Log::error('ORS Geocoding API gagal:', [
                 'status' => $response->status(),
                 'body' => $response->body(),
-                'coordinates' => ['lat' => $latitude, 'lng' => $longitude]
+                'coordinates' => ['lat' => $latitude, 'lng' => $longitude],
             ]);
+
             return null;
         }
 
@@ -377,35 +381,36 @@ class AlamatRumahController extends Controller
         if (empty($data['features'])) {
             Log::warning('Tidak ada lokasi ditemukan untuk koordinat:', [
                 'latitude' => $latitude,
-                'longitude' => $longitude
+                'longitude' => $longitude,
             ]);
+
             return null;
         }
 
-        $feature = $data['features'][0];
+        $feature    = $data['features'][0];
         $properties = $feature['properties'];
 
         // Susun nama lokasi dengan prioritas tertentu dan hindari duplikasi
         $locationParts = [];
-        $addedParts = []; // Array untuk melacak bagian yang sudah ditambahkan
+        $addedParts    = []; // Array untuk melacak bagian yang sudah ditambahkan
 
         // Ambil nama jalan/alamat jika ada
-        if (!empty($properties['name']) && !in_array(strtolower($properties['name']), $addedParts)) {
+        if (! empty($properties['name']) && ! in_array(strtolower($properties['name']), $addedParts)) {
             $locationParts[] = $properties['name'];
-            $addedParts[] = strtolower($properties['name']);
+            $addedParts[]    = strtolower($properties['name']);
         }
 
         // Ambil kelurahan/desa (prioritas neighbourhood > locality)
-        if (!empty($properties['neighbourhood']) && !in_array(strtolower($properties['neighbourhood']), $addedParts)) {
+        if (! empty($properties['neighbourhood']) && ! in_array(strtolower($properties['neighbourhood']), $addedParts)) {
             $locationParts[] = $properties['neighbourhood'];
-            $addedParts[] = strtolower($properties['neighbourhood']);
-        } elseif (!empty($properties['locality']) && !in_array(strtolower($properties['locality']), $addedParts)) {
+            $addedParts[]    = strtolower($properties['neighbourhood']);
+        } elseif (! empty($properties['locality']) && ! in_array(strtolower($properties['locality']), $addedParts)) {
             $locationParts[] = $properties['locality'];
-            $addedParts[] = strtolower($properties['locality']);
+            $addedParts[]    = strtolower($properties['locality']);
         }
 
         // Ambil kecamatan/kabupaten - cek apakah berbeda dengan yang sudah ada
-        if (!empty($properties['county']) && !in_array(strtolower($properties['county']), $addedParts)) {
+        if (! empty($properties['county']) && ! in_array(strtolower($properties['county']), $addedParts)) {
             // Cek apakah county mengandung kata yang sama dengan locality/neighbourhood
             $countyLower = strtolower($properties['county']);
             $isDuplicate = false;
@@ -418,14 +423,14 @@ class AlamatRumahController extends Controller
                 }
             }
 
-            if (!$isDuplicate) {
+            if (! $isDuplicate) {
                 $locationParts[] = $properties['county'];
-                $addedParts[] = $countyLower;
+                $addedParts[]    = $countyLower;
             }
         }
 
         // Ambil provinsi - pastikan tidak duplikasi dengan county
-        if (!empty($properties['region']) && !in_array(strtolower($properties['region']), $addedParts)) {
+        if (! empty($properties['region']) && ! in_array(strtolower($properties['region']), $addedParts)) {
             $regionLower = strtolower($properties['region']);
             $isDuplicate = false;
 
@@ -436,14 +441,14 @@ class AlamatRumahController extends Controller
                 }
             }
 
-            if (!$isDuplicate) {
+            if (! $isDuplicate) {
                 $locationParts[] = $properties['region'];
-                $addedParts[] = $regionLower;
+                $addedParts[]    = $regionLower;
             }
         }
 
         // Ambil negara - biasanya selalu "Indonesia" untuk koordinat di Indonesia
-        if (!empty($properties['country']) && strtolower($properties['country']) !== 'indonesia') {
+        if (! empty($properties['country']) && strtolower($properties['country']) !== 'indonesia') {
             $locationParts[] = $properties['country'];
         }
 
@@ -463,13 +468,15 @@ class AlamatRumahController extends Controller
     {
         $apiKey = env('ORS_API_KEY');
 
-        if (!$apiKey) {
+        if (! $apiKey) {
             Log::error('API key kosong!');
+
             return 'API key tidak tersedia';
         }
 
-        if (!is_numeric($latitude) || !is_numeric($longitude)) {
+        if (! is_numeric($latitude) || ! is_numeric($longitude)) {
             Log::error('Koordinat tidak valid');
+
             return 'Koordinat tidak valid';
         }
 
@@ -485,11 +492,12 @@ class AlamatRumahController extends Controller
             'lang' => 'id', // Parameter bahasa Indonesia
         ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             Log::error('ORS Geocoding API gagal:', [
                 'status' => $response->status(),
-                'body' => $response->body()
+                'body' => $response->body(),
             ]);
+
             return 'Gagal mengambil data lokasi';
         }
 
@@ -499,26 +507,26 @@ class AlamatRumahController extends Controller
             return 'Lokasi tidak ditemukan';
         }
 
-        $feature = $data['features'][0];
+        $feature    = $data['features'][0];
         $properties = $feature['properties'];
 
         // Susun alamat yang terformat dengan prioritas komponen alamat
         $addressParts = [];
 
         // Tambahkan nama tempat jika ada
-        if (!empty($properties['name'])) {
+        if (! empty($properties['name'])) {
             $addressParts[] = $properties['name'];
         }
 
         // Logika untuk menghindari duplikasi kota/kabupaten
         $locality = $properties['locality'] ?? '';
-        $county = $properties['county'] ?? '';
+        $county   = $properties['county'] ?? '';
 
         // Cek apakah locality dan county mengandung nama yang sama
-        if (!empty($locality) && !empty($county)) {
+        if (! empty($locality) && ! empty($county)) {
             // Hapus prefix "Kota " atau "Kabupaten " untuk perbandingan
             $localityClean = str_replace(['Kota ', 'Kabupaten '], '', $locality);
-            $countyClean = str_replace(['Kota ', 'Kabupaten '], '', $county);
+            $countyClean   = str_replace(['Kota ', 'Kabupaten '], '', $county);
 
             // Jika nama dasarnya sama, prioritaskan yang lebih spesifik (locality)
             if (stripos($localityClean, $countyClean) !== false || stripos($countyClean, $localityClean) !== false) {
@@ -528,24 +536,24 @@ class AlamatRumahController extends Controller
                 $addressParts[] = $locality;
                 $addressParts[] = $county;
             }
-        } elseif (!empty($locality)) {
+        } elseif (! empty($locality)) {
             $addressParts[] = $locality;
-        } elseif (!empty($county)) {
+        } elseif (! empty($county)) {
             $addressParts[] = $county;
         }
 
         // Tambahkan provinsi
-        if (!empty($properties['region'])) {
+        if (! empty($properties['region'])) {
             $addressParts[] = $properties['region'];
         }
 
         // Tambahkan negara
-        if (!empty($properties['country'])) {
+        if (! empty($properties['country'])) {
             $addressParts[] = $properties['country'];
         }
 
         // Tambahkan kode pos jika ada
-        if (!empty($properties['postalcode'])) {
+        if (! empty($properties['postalcode'])) {
             $addressParts[] = $properties['postalcode'];
         }
 
@@ -564,17 +572,19 @@ class AlamatRumahController extends Controller
     {
         $apiKey = env('ORS_API_KEY');
 
-        if (!$apiKey) {
+        if (! $apiKey) {
             Log::error('API key kosong!');
+
             return null;
         }
 
         // Validasi input koordinat
-        if (!is_numeric($latitude) || !is_numeric($longitude)) {
+        if (! is_numeric($latitude) || ! is_numeric($longitude)) {
             Log::error('Koordinat tidak valid', [
                 'latitude' => $latitude,
-                'longitude' => $longitude
+                'longitude' => $longitude,
             ]);
+
             return null;
         }
 
@@ -582,8 +592,9 @@ class AlamatRumahController extends Controller
         if ($latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
             Log::error('Koordinat di luar jangkauan yang valid', [
                 'latitude' => $latitude,
-                'longitude' => $longitude
+                'longitude' => $longitude,
             ]);
+
             return null;
         }
 
@@ -599,12 +610,13 @@ class AlamatRumahController extends Controller
             'lang' => 'id', // Parameter bahasa Indonesia
         ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             Log::error('ORS Geocoding API gagal:', [
                 'status' => $response->status(),
                 'body' => $response->body(),
-                'coordinates' => ['lat' => $latitude, 'lng' => $longitude]
+                'coordinates' => ['lat' => $latitude, 'lng' => $longitude],
             ]);
+
             return null;
         }
 
@@ -614,35 +626,36 @@ class AlamatRumahController extends Controller
         if (empty($data['features'])) {
             Log::warning('Tidak ada lokasi ditemukan untuk koordinat:', [
                 'latitude' => $latitude,
-                'longitude' => $longitude
+                'longitude' => $longitude,
             ]);
+
             return null;
         }
 
-        $feature = $data['features'][0];
+        $feature    = $data['features'][0];
         $properties = $feature['properties'];
 
         // Susun nama lokasi dengan prioritas tertentu dan hindari duplikasi
         $locationParts = [];
-        $addedParts = []; // Array untuk melacak bagian yang sudah ditambahkan
+        $addedParts    = []; // Array untuk melacak bagian yang sudah ditambahkan
 
         // Ambil nama jalan/alamat jika ada
-        if (!empty($properties['name']) && !in_array(strtolower($properties['name']), $addedParts)) {
+        if (! empty($properties['name']) && ! in_array(strtolower($properties['name']), $addedParts)) {
             $locationParts[] = $properties['name'];
-            $addedParts[] = strtolower($properties['name']);
+            $addedParts[]    = strtolower($properties['name']);
         }
 
         // Ambil kelurahan/desa (prioritas neighbourhood > locality)
-        if (!empty($properties['neighbourhood']) && !in_array(strtolower($properties['neighbourhood']), $addedParts)) {
+        if (! empty($properties['neighbourhood']) && ! in_array(strtolower($properties['neighbourhood']), $addedParts)) {
             $locationParts[] = $properties['neighbourhood'];
-            $addedParts[] = strtolower($properties['neighbourhood']);
-        } elseif (!empty($properties['locality']) && !in_array(strtolower($properties['locality']), $addedParts)) {
+            $addedParts[]    = strtolower($properties['neighbourhood']);
+        } elseif (! empty($properties['locality']) && ! in_array(strtolower($properties['locality']), $addedParts)) {
             $locationParts[] = $properties['locality'];
-            $addedParts[] = strtolower($properties['locality']);
+            $addedParts[]    = strtolower($properties['locality']);
         }
 
         // Ambil kecamatan/kabupaten - cek apakah berbeda dengan yang sudah ada
-        if (!empty($properties['county']) && !in_array(strtolower($properties['county']), $addedParts)) {
+        if (! empty($properties['county']) && ! in_array(strtolower($properties['county']), $addedParts)) {
             // Cek apakah county mengandung kata yang sama dengan locality/neighbourhood
             $countyLower = strtolower($properties['county']);
             $isDuplicate = false;
@@ -655,14 +668,14 @@ class AlamatRumahController extends Controller
                 }
             }
 
-            if (!$isDuplicate) {
+            if (! $isDuplicate) {
                 $locationParts[] = $properties['county'];
-                $addedParts[] = $countyLower;
+                $addedParts[]    = $countyLower;
             }
         }
 
         // Ambil provinsi - pastikan tidak duplikasi dengan county
-        if (!empty($properties['region']) && !in_array(strtolower($properties['region']), $addedParts)) {
+        if (! empty($properties['region']) && ! in_array(strtolower($properties['region']), $addedParts)) {
             $regionLower = strtolower($properties['region']);
             $isDuplicate = false;
 
@@ -673,14 +686,14 @@ class AlamatRumahController extends Controller
                 }
             }
 
-            if (!$isDuplicate) {
+            if (! $isDuplicate) {
                 $locationParts[] = $properties['region'];
-                $addedParts[] = $regionLower;
+                $addedParts[]    = $regionLower;
             }
         }
 
         // Ambil negara - biasanya selalu "Indonesia" untuk koordinat di Indonesia
-        if (!empty($properties['country']) && strtolower($properties['country']) !== 'indonesia') {
+        if (! empty($properties['country']) && strtolower($properties['country']) !== 'indonesia') {
             $locationParts[] = $properties['country'];
         }
 

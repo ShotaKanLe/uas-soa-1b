@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\KaryawanPerusahaan;
 use App\Models\Service;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class ServiceController extends Controller
 {
@@ -100,7 +99,7 @@ class ServiceController extends Controller
             'deskripsi_service' => $request->service_description,
         ]);
 
-        return redirect('dashboard/staff/service/edit/' . $id)->with('success', 'Data Successfully Updated');
+        return redirect('dashboard/staff/service/edit/'.$id)->with('success', 'Data Successfully Updated');
     }
 
     public function restore(string $id)

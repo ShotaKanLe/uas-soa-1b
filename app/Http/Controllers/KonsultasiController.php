@@ -78,6 +78,7 @@ class KonsultasiController extends Controller
             return $redirect;
         }
         HasilKonsultasi::destroy($id);
+
         return redirect('dashboard/perusahaan/konsultasi')->with('success', 'Data Successfully Deleted');
     }
 
@@ -101,7 +102,7 @@ class KonsultasiController extends Controller
             ]);
 
             // Simpan file dengan nama acak
-            $fileName = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $fileName = uniqid().'_'.time().'.'.$file->getClientOriginalExtension();
             $file->move(public_path('messages'), $fileName);
         }
 

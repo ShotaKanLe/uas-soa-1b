@@ -49,9 +49,9 @@ class AuthController extends Controller
                 session(['auth_token' => $authToken]);
 
                 Log::info('StaffMitra logged in', [
-                    'staff_id'  => $staffMitra->id,
+                    'staff_id' => $staffMitra->id,
                     'auth_token' => $authToken,
-                    'correlation_id' => $correlationId
+                    'correlation_id' => $correlationId,
                 ]);
 
                 return redirect()->route('dashboard.staff');
@@ -71,9 +71,9 @@ class AuthController extends Controller
                 session(['auth_token' => $authToken]);
 
                 Log::info('StaffPerusahaan logged in', [
-                    'staff_id'  => $staffPerusahaan->id,
+                    'staff_id' => $staffPerusahaan->id,
                     'auth_token' => $authToken,
-                    'correlation_id' => $correlationId
+                    'correlation_id' => $correlationId,
                 ]);
 
                 return redirect()->route('dashboard.perusahaan');
@@ -94,7 +94,7 @@ class AuthController extends Controller
                 Log::info('Karyawan logged in', [
                     'karyawan_id' => $karyawan->id,
                     'auth_token' => $authToken,
-                    'correlation_id' => $correlationId
+                    'correlation_id' => $correlationId,
                 ]);
 
                 return redirect()->route('dashboard.karyawan');
@@ -104,7 +104,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             Log::error('Login error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return redirect()->back()->withErrors(['email' => 'Terjadi kesalahan saat login']);
@@ -164,11 +164,11 @@ class AuthController extends Controller
                 $code->status = 'USED';
                 $code->save();
             } elseif ($code->code_type == 'PERUSAHAAN') {
-                $staffPerusahaan             = new StaffPerusahaan;
-                $staffPerusahaan->nama_staff = $validated['name'];
-                $staffPerusahaan->email      = $validated['email'];
-                $staffPerusahaan->password   = Hash::make($validated['password']);
-                $staffPerusahaan->id_code    = $idCode;
+                $staffPerusahaan                = new StaffPerusahaan;
+                $staffPerusahaan->nama_staff    = $validated['name'];
+                $staffPerusahaan->email         = $validated['email'];
+                $staffPerusahaan->password      = Hash::make($validated['password']);
+                $staffPerusahaan->id_code       = $idCode;
                 $staffPerusahaan->id_perusahaan = 1;
                 $staffPerusahaan->save();
 
@@ -184,7 +184,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             Log::error('Registration error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return redirect()->back()->withErrors(['email' => 'Terjadi kesalahan saat registrasi']);
@@ -216,7 +216,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             Log::error('Check duplicate account error', [
                 'email' => $email,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return false;
@@ -248,7 +248,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             Log::error('Check duplicate name error', [
                 'name' => $name,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return false;
@@ -261,7 +261,7 @@ class AuthController extends Controller
             Log::info('User logged out', [
                 'staff_id' => session('id'),
                 'correlation_id' => session('correlation_id'),
-                'auth_token' => session('auth_token')
+                'auth_token' => session('auth_token'),
             ]);
 
             Auth::guard('staff')->logout();
@@ -274,7 +274,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             Log::error('Logout error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return redirect()->route('login');
@@ -299,7 +299,7 @@ class AuthController extends Controller
             return null;
         } catch (\Exception $e) {
             Log::error('Check login error', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return null;

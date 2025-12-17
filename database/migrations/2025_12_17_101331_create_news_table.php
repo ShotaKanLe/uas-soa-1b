@@ -16,12 +16,12 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('content');
-            $table->string('publisher'); 
-            $table->string('image')->nullable(); 
+            $table->string('publisher');
+            $table->string('image')->nullable();
             $table->timestamps();
-            
+
             // Kolom untuk Soft Deletes
-            $table->softDeletes(); 
+            $table->softDeletes();
         });
     }
 
